@@ -45,7 +45,15 @@ Plugin que permite aplicar filtros sobre las capas de un mapa y visualizar de fo
   - 'BR':bottom right
 - **filters**: Cuando toma el valor false, en cada panning muestra en la tabla los registros que se encuentran en el bounding box de la pantalla. Cuando toma valor tres, muestra botones para establecer filtro por bounding box o por poligono trazado por el usuario.
 
-## Ejemplos de uso 👷
+## Mejoras 👷
+
+* Documentación del plugin
+* Mejorar datos muestra
+* Al seleccionar un elemento, sus propiedades tiene que aparecer filtradas en la lista
+* Mejorar el aspecto visual de la información mostrada
+* Filtros por campo ?¿
+
+
 
 ### Ejemplo 1
 ```javascript

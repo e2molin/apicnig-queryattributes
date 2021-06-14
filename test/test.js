@@ -8,13 +8,13 @@ const map = M.map({
   container: 'mapjs',
   controls: ['panzoom','panzoombar', 'scale*true', 'scaleline', 'rotate', 'location','backgroundlayers'], //getfeatureinfo: este control es un poco coñazo, siempre está buscando información al hacer clic en el mapa.
   // controls: ['panzoom', 'scale*true', 'scaleline', 'rotate', 'location', 'backgroundlayers', 'getfeatureinfo'],
-  zoom: 6,
+  zoom: 10 ,  //6
   maxZoom: 20,
   minZoom: 4,
   projection: "EPSG:3857*m",
   center: {
-      x: -712300,
-      y: 4310700,
+      x: -860000, //-712300,
+      y: 5420000, //4310700,
       draw: false  //Dibuja un punto en el lugar de la coordenada
   },
 });
@@ -48,6 +48,7 @@ const mp = new QueryAttributes({
 });
 
 
+
 const campamentos = new M.layer.WFS({
   url: "http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows?",
   namespace: "sepim",
@@ -70,6 +71,18 @@ map.addLayers(vertex);
 
 
 map.addPlugin(mp);
+
+
+const plugMouse = new M.plugin.MouseSRS({
+  tooltip: "Muestra coordenadas",
+  srs: "EPSG:4326",
+  label: "WGS84",
+  precision: 4,
+  geoDecimalDigits: 3,
+  utmDecimalDigits: 2,
+  activeZ: false
+});
+map.addPlugin(plugMouse);
 
 window.map = map;
 

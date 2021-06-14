@@ -125,7 +125,7 @@ export default class QueryAttributesControl extends M.Control {
       });
 
       console.log("Paso");
-      this.addElementSelection4Info();
+      
       console.log(this.layer);
       
 
@@ -289,8 +289,15 @@ export default class QueryAttributesControl extends M.Control {
         if (callback) {
           callback();
         }
+
+        this.addElementSelection4Info();
       }
+      
     }, 1000);
+
+
+
+
   }
 
   /**
@@ -341,6 +348,7 @@ export default class QueryAttributesControl extends M.Control {
   }
 
   centerOnFeature(evt) {
+    console.log (evt);
     document.querySelector('#m-queryattributes-options-information-container').innerHTML = '';
     const value = evt.target.parentNode.children[0].textContent.trim();
     const features = this.layer.getFeatures();
@@ -383,7 +391,7 @@ export default class QueryAttributesControl extends M.Control {
         },
       });
 
-      document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '15vh';
+      document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '15vh';// e2m:tamaño máximo cuan do se muestra información
       document.querySelector('#m-queryattributes-options-information-container').appendChild(html);
       document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').addEventListener('click', () => {
         const elem = document.querySelector('#m-queryattributes-information-content div');
@@ -392,11 +400,13 @@ export default class QueryAttributesControl extends M.Control {
           document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '64vh';
           document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.remove('icon-colapsar');
           document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.add('icon-desplegar');
+          console.log("Colapsado");
         } else {
           elem.style.display = 'block';
           document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '15vh';
           document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.remove('icon-desplegar');
           document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.add('icon-colapsar');
+          console.log("Desplegado");
         }
       });
 
@@ -469,43 +479,82 @@ export default class QueryAttributesControl extends M.Control {
 
 
   addElementSelection4Info() {
-    //this.getImpl().addSingleClic();
 
-    this.map_.on(M.evt.CLICK, this.manageClic, this);
-
-
-
-    return;
-    //console.log(this.map.getImpl());
+    //this.map_.on(M.evt.CLICK, this.manageClic, this);
+    
+    console.log('addElementSelection4Info');
+    console.log(this.getColumnConfig(0));
     let mapaOL = this.map.getMapImpl();
     //console.log(this.configuration.layer);
     console.log(mapaOL);
-    mapaOL.on('singleclick', (evt) => {
+    mapaOL.on('click', (evt) => {
       console.log('Prueba singleclick en arrow function');
       mapaOL.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-        console.log(layer);
-        console.log(feature);
-        console.log(feature.getGeometry());
+
+
+        //console.log(layer);
+        //console.log(feature);
+        //console.log(feature.getGeometry());
+        //console.log(evt.pixel)
+
 
         var featureFacade = M.impl.Feature.olFeature2Facade(feature);
-        const filter = M.filter.spatial.INTERSECT(featureFacade.getGeometry());
+        console.info(featureFacade.getAttributes());
+        
+        const fields = [];
+        Object.entries(featureFacade.getAttributes()).forEach((entry) => {
 
-        //console.log(this.map.getLayers());
+          
+          /*fields.push({
+            name: config.alias,
+            value: entry[1],
+            isURL: config.type === 'url',
+            isImage: config.type === 'image',
+            isString: config.type === 'string',
+          });*/
+          //const config = getColumnConfig(entry[0]);
+          //console.log(config);
+        });
+       
 
-/*
 
-        layer.setFilter(filter);
-        this.filtered = true;
-        this.oldFilter = filter;
-        this.oldLayer = layer;
-        this.showAttributeTable(layer.name);
-        const buttons = '#m-queryattributes-options-buttons>button';
-        document.querySelector(`${buttons}#limpiar-filtro-btn`).style.display = 'block';
-        if (this.filters) {
-          this.map.setBbox(this.getImpl().getLayerExtent(layer));
-        }        
-        console.log(layer);
-*/
+
+        /*console.log(this.getColumnConfig('nombre'));
+        const html = M.template.compileSync(information, {
+          vars: {
+            fields,
+            translations: {
+              close: getValue('close'),
+              information: getValue('information'),
+              show_hide: getValue('show_hide'),
+            },
+          },
+        });*/
+
+
+        /*const fields = [];
+        Object.entries(filtered[0].getAttributes()).forEach((entry) => {
+          const config = this.getColumnConfig(entry[0]);
+          fields.push({
+            name: config.alias,
+            value: entry[1],
+            isURL: config.type === 'url',
+            isImage: config.type === 'image',
+            isString: config.type === 'string',
+          });
+        });
+  
+        const html = M.template.compileSync(information, {
+          vars: {
+            fields,
+            translations: {
+              close: getValue('close'),
+              information: getValue('information'),
+              show_hide: getValue('show_hide'),
+            },
+          },
+        });*/
+
 
 
 
@@ -513,13 +562,10 @@ export default class QueryAttributesControl extends M.Control {
     });
     console.log(this.map.getLayers());
 
-
-
-    /* this.map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-      console.log(feature);
-      console.log(layer);
-    }); */
   }
+
+
+
 
   manageClic(evt ){
     console.log(evt);
