@@ -108,26 +108,24 @@ export default class QueryAttributesControl extends M.Control {
     return new Promise((success, fail) => {
       this.createInitialView(map);
 
-
-      Handlebars.registerHelper('times', function(n, block) {
-        var accum = '';
-        for(var i = 0; i < n; ++i)
-            accum += block.fn(i);
-        return accum;
-      });
-
-      Handlebars.registerHelper('iter', function(context, options) {
-        var fn = options.fn, inverse = options.inverse;
-        var ret = "";
-      
-        if(context && context.length > 0) {
-          for(var i=0, j=context.length; i<j; i++) {
-            ret = ret + fn(_.extend({}, context[i], { i: i, iPlus1: i + 1 }));
+      /**
+       * Helper for Formatter Elements.
+       * Symbol = param * value;
+       */
+      Handlebars.registerHelper("pattern", function (options){
+        for (let k in options.data.root.fields) {
+          if (!options.data.root.fields[k].isFormatter) continue;
+          console.log(options.data.root.fields[k].isFormatter);
+          if (options.data.root.fields[k].typeparam === undefined){
+            continue;
           }
-        } else {
-          ret = inverse(this);
+          const symbolPattern= options.data.root.fields[k].typeparam;
+          var output = "";
+          for (let i = 0; i < options.data.root.fields[k].value; i++) {
+            output += symbolPattern;
+          }
         }
-        return ret;
+        return output;
       });
 
       const html = M.template.compileSync(template, {
@@ -228,6 +226,8 @@ export default class QueryAttributesControl extends M.Control {
         document.getElementById('m-queryattributes-table').innerHTML = '';
         const headerAtt = [];
         const aligns = [];
+        const typesdata = [];
+        const typesparam = [];
         let attributes = [];
         const features = this.layer.getFeatures();
         if (!M.utils.isNullOrEmpty(features)) {
@@ -240,10 +240,14 @@ export default class QueryAttributesControl extends M.Control {
               if (filtered.length > 0) {
                 headerAtt.push({ name: attr, alias: filtered[0].alias });
                 aligns.push(filtered[0].align);
+                typesdata.push(filtered[0].type);
+                typesparam.push(filtered[0].typeparam);
               }
             } else {
               headerAtt.push({ name: attr, alias: attr });
               aligns.push('right');
+              typesdata.push('string');
+              typesparam.push('');
             }
           });
 
@@ -254,12 +258,14 @@ export default class QueryAttributesControl extends M.Control {
               if (columns !== undefined && columns.length > 0) {
                 const newProperties = [];
                 properties.forEach((prop, index) => {
+                  //console.log(`${index} : ${prop}`);
                   const filtered = columns.filter((elem) => {
                     return elem.name === keys[index] && elem.visible;
                   });
 
                   if (filtered.length > 0) {
                     newProperties.push(prop);
+                    //console.log(`${prop}`);
                   }
                 });
 
@@ -269,7 +275,7 @@ export default class QueryAttributesControl extends M.Control {
               }
             }
           });
-
+          
           if (this.sortProperties_.active) {
             attributes = this.sortAttributes_(attributes, headerAtt);
           }
@@ -279,13 +285,14 @@ export default class QueryAttributesControl extends M.Control {
         const attributesParam = [];
         attributes.forEach((values) => {
           const attrP = [];
+          //console.log(values);
           values.forEach((v, index) => {
-            attrP.push({ value: v, align: aligns[index] });
+            attrP.push({ value: v, align: aligns[index], type: typesdata[index], typeparam: typesparam[index] });
           });
 
           attributesParam.push(attrP);
         });
-
+        console.log(attributesParam);
         if (!M.utils.isUndefined(headerAtt)) {
           params = {
             headerAtt,
@@ -395,19 +402,21 @@ export default class QueryAttributesControl extends M.Control {
         }
       }
 
+
+
       const fields = [];
       Object.entries(filtered[0].getAttributes()).forEach((entry) => {
         const config = this.getColumnConfig(entry[0]);
         fields.push({
           name: config.alias,
           value: entry[1],
-          isURL: config.type === 'url',
+          isLinkURL: config.type === 'linkURL',
+          isButtonURL: config.type === 'buttonURL',
           isImage: config.type === 'image',
           isString: config.type === 'string',
           isPercentage: config.type === 'percentage',
           isFormatter: config.type === 'formatter',
-          param: config.param,
-          matriz: ['a','b','c','d','e'],
+          typeparam: config.typeparam,
         });
       });
 
@@ -471,7 +480,7 @@ export default class QueryAttributesControl extends M.Control {
     if (filtered.length > 0) {
       res = filtered[0];
     }
-    console.log(res);
+
     return res;
   }
 
@@ -539,10 +548,13 @@ export default class QueryAttributesControl extends M.Control {
         fields.push({
           name: config.alias,
           value: entry[1],
-          isURL: config.type === 'url',
+          isLinkURL: config.type === 'linkURL',
+          isButtonURL: config.type === 'buttonURL',
           isImage: config.type === 'image',
           isString: config.type === 'string',
           isPercentage: config.type === 'percentage',
+          isFormatter: config.type === 'formatter',
+          typeparam: config.typeparam,
         });
       });
 

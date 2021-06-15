@@ -84,3 +84,12 @@ Object.entries(featureFacade.getAttributes()).forEach((entry) => {
   console.log(`Clave ${entry[0]} 👉 Valor ${entry[1]}`);
 });
 ```
+
+
+Formatear la tabla para que aparezcan imagenes
+Definir que campos son searchables
+buscar con keypress
+iconos para indicar por cual de las columnas se ha ordenado
+filtros por b´suqeda facetada
+Cuando el campo identificador no se quiere mostrar, no funciona.
+

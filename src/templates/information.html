@@ -9,35 +9,40 @@
   <div>
     {{#each fields}}
       <p>
-        <b>🔹 {{this.name}}:</b>
-        <br/>
-        {{#if isURL}}
+
+        {{#if isLinkURL}}
+          <span class="lbl-descript">🔹 {{this.name}}:</span>
+          <br/>        
           <a href="{{this.value}}" target="_blank" rel="noopener noreferrer">{{this.value}}</a>
         {{/if}}
 
+        {{#if isButtonURL}}
+          <a class="m-queryattributes-information-button-link" href="{{this.value}}" target="_blank" rel="noopener noreferrer">{{this.typeparam}}</a>
+        {{/if}}
+
         {{#if isImage}}
+          <span class="lbl-descript">🔹 {{this.name}}:</span>
+          <br/>  
           <a class="m-queryattributes-information-image-link" href="{{this.value}}" target="_blank" rel="noopener noreferrer"><img src="{{this.value}}" /></a>
         {{/if}}
 
         {{#if isString}}
+          <span class="lbl-descript">🔹 {{this.name}}:</span>
+          <br/>  
           {{this.value}}
         {{/if}}
 
         {{#if isPercentage}}
+          <span class="lbl-descript">🔹 {{this.name}}:</span>
+          <br/>  
           <progress value="{{this.value}}" max="100"> {{this.value}} % </progress> {{this.value}} %
         {{/if}}
 
         {{#if isFormatter}}
-          {{#times 10}}
-            <span>{{this}}</span>{{this.param}}
-          {{/times}}
-          <hr/>
-          {{#each matriz}}
-          {{@index}}: {{this}}
-          {{/each}}          ç
-        {{/if}}        
-
-
+          <span class="lbl-descript">🔹 {{this.name}}:</span>
+          <br/>  
+          {{pattern}}
+        {{/if}}
       </p>
     {{/each}}
   </div>
