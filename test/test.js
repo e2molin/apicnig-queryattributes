@@ -33,7 +33,7 @@ const mp = new QueryAttributes({
       { name: 'nombre', alias: 'Nombre Vértice', visible: true, align: 'left', type: 'string' },
       { name: 'xutmetrs89', alias: 'Coordenada X (UTM ETRS89)', visible: false, align: 'left', type: 'string' },
       { name: 'yutmetrs89', alias: 'Coordenada Y (UTM ETRS89)', visible: false, align: 'left', type: 'string' },
-      { name: 'huso', alias: 'Huso UTM', visible: false, align: 'left', type: 'string' },
+      { name: 'huso', alias: 'Huso UTM', visible: false, align: 'left', type: 'formatter', param:'🥚' },
       { name: 'horto', alias: 'Altitud Ortométrica', visible: false, align: 'left', type: 'string' },
       { name: 'summary', alias: 'Descripción', visible: false, align: 'left', type: 'string' },
       { name: 'lat', alias: 'Latitud', visible: false, align: 'left', type: 'string' },

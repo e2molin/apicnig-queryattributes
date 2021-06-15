@@ -69,3 +69,18 @@ mapjs.getMapImpl().on('click', (evt) => {
         console.log(layer);
 */
 
+
+### Recorriendo un objeto, entradas, claves y valores
+
+```javascript
+// Objeto [featureFacade.getAttributes()]
+Object.keys(featureFacade.getAttributes()).forEach((entry) => {
+  console.log(`Clave ${entry}`);
+});
+Object.values(featureFacade.getAttributes()).forEach((entry) => {
+  console.log(`Valor ${entry}`);
+});
+Object.entries(featureFacade.getAttributes()).forEach((entry) => {
+  console.log(`Clave ${entry[0]} 👉 Valor ${entry[1]}`);
+});
+```

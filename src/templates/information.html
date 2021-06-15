@@ -9,7 +9,7 @@
   <div>
     {{#each fields}}
       <p>
-        <b>{{this.name}}:</b>
+        <b>🔹 {{this.name}}:</b>
         <br/>
         {{#if isURL}}
           <a href="{{this.value}}" target="_blank" rel="noopener noreferrer">{{this.value}}</a>
@@ -22,6 +22,22 @@
         {{#if isString}}
           {{this.value}}
         {{/if}}
+
+        {{#if isPercentage}}
+          <progress value="{{this.value}}" max="100"> {{this.value}} % </progress> {{this.value}} %
+        {{/if}}
+
+        {{#if isFormatter}}
+          {{#times 10}}
+            <span>{{this}}</span>{{this.param}}
+          {{/times}}
+          <hr/>
+          {{#each matriz}}
+          {{@index}}: {{this}}
+          {{/each}}          ç
+        {{/if}}        
+
+
       </p>
     {{/each}}
   </div>

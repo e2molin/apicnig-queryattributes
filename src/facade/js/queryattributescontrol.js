@@ -107,6 +107,29 @@ export default class QueryAttributesControl extends M.Control {
     this.map = map;
     return new Promise((success, fail) => {
       this.createInitialView(map);
+
+
+      Handlebars.registerHelper('times', function(n, block) {
+        var accum = '';
+        for(var i = 0; i < n; ++i)
+            accum += block.fn(i);
+        return accum;
+      });
+
+      Handlebars.registerHelper('iter', function(context, options) {
+        var fn = options.fn, inverse = options.inverse;
+        var ret = "";
+      
+        if(context && context.length > 0) {
+          for(var i=0, j=context.length; i<j; i++) {
+            ret = ret + fn(_.extend({}, context[i], { i: i, iPlus1: i + 1 }));
+          }
+        } else {
+          ret = inverse(this);
+        }
+        return ret;
+      });
+
       const html = M.template.compileSync(template, {
         vars: {
           translations: {
@@ -290,7 +313,11 @@ export default class QueryAttributesControl extends M.Control {
           callback();
         }
 
-        this.addElementSelection4Info();
+        this.map.getMapImpl().on('click', (evt) => {
+          this.actualizaInfo(evt);
+        });
+
+
       }
       
     }, 1000);
@@ -377,8 +404,14 @@ export default class QueryAttributesControl extends M.Control {
           isURL: config.type === 'url',
           isImage: config.type === 'image',
           isString: config.type === 'string',
+          isPercentage: config.type === 'percentage',
+          isFormatter: config.type === 'formatter',
+          param: config.param,
+          matriz: ['a','b','c','d','e'],
         });
       });
+
+
 
       const html = M.template.compileSync(information, {
         vars: {
@@ -391,31 +424,43 @@ export default class QueryAttributesControl extends M.Control {
         },
       });
 
-      document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '15vh';// e2m:tamaño máximo cuan do se muestra información
-      document.querySelector('#m-queryattributes-options-information-container').appendChild(html);
-      document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').addEventListener('click', () => {
-        const elem = document.querySelector('#m-queryattributes-information-content div');
-        if (elem.style.display !== 'none') {
-          elem.style.display = 'none';
-          document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '64vh';
-          document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.remove('icon-colapsar');
-          document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.add('icon-desplegar');
-          console.log("Colapsado");
-        } else {
-          elem.style.display = 'block';
-          document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '15vh';
-          document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.remove('icon-desplegar');
-          document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.add('icon-colapsar');
-          console.log("Desplegado");
-        }
-      });
+      // e2m: Vaciamos el contenedor de información para cargar los datos nuevos
+      
+      this.launchInfoWindow(html);
 
-      document.querySelector('#m-queryattributes-information-content > p > span > span.icon-cerrar').addEventListener('click', () => {
-        document.querySelector('#m-queryattributes-options-information-container').innerHTML = '';
-        document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '75vh';
-      });
+
     }
   }
+
+  launchInfoWindow(html){
+
+    document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '25vh';// e2m:tamaño máximo cuando se muestra información
+    document.querySelector('#m-queryattributes-options-information-container').innerHTML = ''; // e2m: borro contenido para evitar que concatene dentro ventanas de información
+    document.querySelector('#m-queryattributes-options-information-container').appendChild(html);
+    document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').addEventListener('click', () => {
+      const elem = document.querySelector('#m-queryattributes-information-content div');
+      if (elem.style.display !== 'none') {
+        elem.style.display = 'none';  // e2m: colapsado
+        document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '64vh';
+        document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.remove('icon-colapsar');
+        document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.add('icon-desplegar');
+      } else {
+        elem.style.display = 'block'; // e2m: desplegado
+        document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '15vh';
+        document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.remove('icon-desplegar');
+        document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.add('icon-colapsar');
+      }
+    });
+
+    document.querySelector('#m-queryattributes-information-content > p > span > span.icon-cerrar').addEventListener('click', () => {
+      document.querySelector('#m-queryattributes-options-information-container').innerHTML = '';
+      document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '75vh';
+    });
+
+  }
+
+
+
 
   getColumnConfig(column) {
     let res = {};
@@ -426,7 +471,7 @@ export default class QueryAttributesControl extends M.Control {
     if (filtered.length > 0) {
       res = filtered[0];
     }
-
+    console.log(res);
     return res;
   }
 
@@ -478,11 +523,50 @@ export default class QueryAttributesControl extends M.Control {
   }
 
 
+  actualizaInfo(evt){
+
+    const this_ = this;
+    const mapaOL = this.map.getMapImpl();
+
+    mapaOL.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+      var featureFacade = M.impl.Feature.olFeature2Facade(feature);
+      console.log(layer); // 📌 Necesito filtrar cuando la capa no es la adecuada
+
+      const fields = [];
+      
+      Object.entries(featureFacade.getAttributes()).forEach((entry) => {
+        const config = this_.getColumnConfig(entry[0]);
+        fields.push({
+          name: config.alias,
+          value: entry[1],
+          isURL: config.type === 'url',
+          isImage: config.type === 'image',
+          isString: config.type === 'string',
+          isPercentage: config.type === 'percentage',
+        });
+      });
+
+      const html = M.template.compileSync(information, {
+        vars: {
+          fields,
+          translations: {
+            close: getValue('close'),
+            information: getValue('information'),
+            show_hide: getValue('show_hide'),
+          },
+        },
+      });
+
+      this_.launchInfoWindow(html);
+
+    });
+
+  }
+
   addElementSelection4Info() {
 
     //this.map_.on(M.evt.CLICK, this.manageClic, this);
     
-    console.log('addElementSelection4Info');
     console.log(this.getColumnConfig(0));
     let mapaOL = this.map.getMapImpl();
     //console.log(this.configuration.layer);
@@ -512,48 +596,11 @@ export default class QueryAttributesControl extends M.Control {
             isImage: config.type === 'image',
             isString: config.type === 'string',
           });*/
-          //const config = getColumnConfig(entry[0]);
-          //console.log(config);
+          const config = this_.getColumnConfig(entry[0]);
+          console.log(config);
         });
        
 
-
-
-        /*console.log(this.getColumnConfig('nombre'));
-        const html = M.template.compileSync(information, {
-          vars: {
-            fields,
-            translations: {
-              close: getValue('close'),
-              information: getValue('information'),
-              show_hide: getValue('show_hide'),
-            },
-          },
-        });*/
-
-
-        /*const fields = [];
-        Object.entries(filtered[0].getAttributes()).forEach((entry) => {
-          const config = this.getColumnConfig(entry[0]);
-          fields.push({
-            name: config.alias,
-            value: entry[1],
-            isURL: config.type === 'url',
-            isImage: config.type === 'image',
-            isString: config.type === 'string',
-          });
-        });
-  
-        const html = M.template.compileSync(information, {
-          vars: {
-            fields,
-            translations: {
-              close: getValue('close'),
-              information: getValue('information'),
-              show_hide: getValue('show_hide'),
-            },
-          },
-        });*/
 
 
 
@@ -566,38 +613,6 @@ export default class QueryAttributesControl extends M.Control {
 
 
 
-
-  manageClic(evt ){
-    console.log(evt);
-    console.log(this.map_.getLayers());
-   
-    
-    const extentPointClicked = this.getImpl().getGeomExtent('point',evt.coord);
-    const polygonFromExtentPointClicked=this.getImpl().getPolygonFromExtent(extentPointClicked);
-    console.log(polygonFromExtentPointClicked);
-    
-    const filter = M.filter.spatial.INTERSECT(polygonFromExtentPointClicked.getGeometry());
-    console.log(filter);
-
-
-
-
-//    this.map_.getLayers()[3].setFilter(filter);
-    console.log(this.layer);
-
-    this.layer.setFilter(filter);
-    this.filtered = true;
-    this.oldFilter = filter;
-    this.oldLayer = this.layer;
-    this.showAttributeTable(this.layer.name);
-    const buttons = '#m-queryattributes-options-buttons>button';
-    document.querySelector(`${buttons}#limpiar-filtro-btn`).style.display = 'block';
-    if (this.filters) {
-      this.map.setBbox(this.getImpl().getLayerExtent(this.layer));
-    }
-
-
-  }
 
   /**
    * Add html option in Selects.
