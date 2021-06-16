@@ -85,11 +85,11 @@ Object.entries(featureFacade.getAttributes()).forEach((entry) => {
 });
 ```
 
-
-Formatear la tabla para que aparezcan imagenes
+Crear los tipos progressbar y formatter
+Formatear la tabla para que aparezcan imagenes, progressbar y formatter
 Definir que campos son searchables
-buscar con keypress
-iconos para indicar por cual de las columnas se ha ordenado
-filtros por b´suqeda facetada
+Buscar con keypress
+Iconos para indicar por cual de las columnas se ha ordenado
+Filtros por búsqueda facetada
 Cuando el campo identificador no se quiere mostrar, no funciona.
 

@@ -13,7 +13,18 @@
                 {{#each attributes}}
                 <tr>
                     {{#each this}}
-                    <td style="text-align: {{this.align}};"> {{{this.value}}}</td>
+                      <!--{{#if isPkColumn}}
+                        <td><a class="m-queryattributes-table-image-link" href="#" rel="noopener noreferrer" style="display:none;"><img src="{{this.value}}" /></a></td>
+                      {{/if}}-->
+                      {{#if isImage}}
+                        <td><a class="m-queryattributes-table-image-link" href="#" rel="noopener noreferrer"><img src="{{this.value}}" /></a></td>
+                      {{/if}}
+                      {{#if isString}}
+                        <td style="text-align:{{this.align}};"> {{this.value}}</td>
+                      {{/if}}
+                      {{#if isFormatter}}
+                        <td style="text-align:{{this.align}};">{{this.value}} * {{this.typeparam}}</td>
+                      {{/if}}
                     {{/each}}
                 </tr>
                 {{/each}}

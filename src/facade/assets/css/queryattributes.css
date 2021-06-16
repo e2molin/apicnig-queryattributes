@@ -356,3 +356,11 @@ Information Window
   text-decoration: none;
   margin-top: 8px;
 }
+
+/**
+Attribute Table
+*/
+
+.m-queryattributes-table-image-link img{
+  width: 150px;
+}

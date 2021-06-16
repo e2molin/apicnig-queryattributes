@@ -115,7 +115,6 @@ export default class QueryAttributesControl extends M.Control {
       Handlebars.registerHelper("pattern", function (options){
         for (let k in options.data.root.fields) {
           if (!options.data.root.fields[k].isFormatter) continue;
-          console.log(options.data.root.fields[k].isFormatter);
           if (options.data.root.fields[k].typeparam === undefined){
             continue;
           }
@@ -125,6 +124,35 @@ export default class QueryAttributesControl extends M.Control {
             output += symbolPattern;
           }
         }
+        return output;
+      });
+
+      //e2m: no consigo que funcione bien este helper
+      Handlebars.registerHelper("patterntable", function (options){
+        console.log(options);
+        //console.log(options.data.root.attributes[150]);
+        let symbolPattern = "";
+        let numRepeat = 0;
+        let output = "";
+        options.data.root.attributes.forEach(element => {
+          try {
+            element.forEach(item => {
+              if(item.isFormatter){
+                  symbolPattern = item.typeparam;
+                  numRepeat= item.value;
+                  console.log(`${symbolPattern} * ${numRepeat}`);
+                  output = "";
+                  for (let i = 0; i < numRepeat; i++) {
+                    output += symbolPattern;
+                  }
+                  console.log(output);
+                  return output;            
+              }
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        });
         return output;
       });
 
@@ -144,11 +172,6 @@ export default class QueryAttributesControl extends M.Control {
       this.kmlLayers = this.map.getKML().map((layer) => {
         return { layer, loaded: false };
       });
-
-      console.log("Paso");
-      
-      console.log(this.layer);
-      
 
       success(html);
       
@@ -211,8 +234,8 @@ export default class QueryAttributesControl extends M.Control {
 
   showAttributeTable(layerName, callback) {
     const columns = this.configuration.columns;
-
-    console.log(`****${layerName}`);
+    console.log(columns)
+    //console.log(`****${layerName}`);
     if (!M.utils.isNullOrEmpty(layerName)) {
       this.layer = this.hasLayer_(layerName)[0];
       if (this.allFeatures === undefined) {
@@ -236,12 +259,13 @@ export default class QueryAttributesControl extends M.Control {
               const filtered = columns.filter((elem) => {
                 return elem.name === attr && elem.visible;
               });
-
               if (filtered.length > 0) {
-                headerAtt.push({ name: attr, alias: filtered[0].alias });
-                aligns.push(filtered[0].align);
-                typesdata.push(filtered[0].type);
-                typesparam.push(filtered[0].typeparam);
+                filtered.forEach((item) => {
+                  headerAtt.push({ name: attr, alias: item.alias });
+                  aligns.push(item.align);
+                  typesdata.push(item.type);
+                  typesparam.push(item.typeparam);
+                });
               }
             } else {
               headerAtt.push({ name: attr, alias: attr });
@@ -250,30 +274,44 @@ export default class QueryAttributesControl extends M.Control {
               typesparam.push('');
             }
           });
-
+          
+          //headerAtt.unshift({ name: this.configuration.pk, alias: 'pk' });
+          console.log(headerAtt);
           features.forEach((feature) => {
             const keys = Object.keys(feature.getAttributes());
             const properties = Object.values(feature.getAttributes());
             if (!M.utils.isNullOrEmpty(properties)) {
               if (columns !== undefined && columns.length > 0) {
                 const newProperties = [];
+                //console.log(columns);
                 properties.forEach((prop, index) => {
-                  //console.log(`${index} : ${prop}`);
+
+                  /*const pkFiltered = columns.filter((elem) => {
+                    return elem.name === keys[index] && elem.name === this.configuration.pk;
+                  });
+                  if (pkFiltered.length > 0) {
+                    newProperties.push(prop);
+                  }*/
+
                   const filtered = columns.filter((elem) => {
                     return elem.name === keys[index] && elem.visible;
                   });
 
                   if (filtered.length > 0) {
-                    newProperties.push(prop);
-                    //console.log(`${prop}`);
+                    console.log(filtered);
+                    filtered.forEach((item)=>{
+                      newProperties.push(prop);
+                    });
                   }
-                });
 
+                });
                 attributes.push(newProperties);
               } else {
                 attributes.push(properties);
+                console.log("Hola");
               }
             }
+            //console.log(attributes);
           });
           
           if (this.sortProperties_.active) {
@@ -287,11 +325,26 @@ export default class QueryAttributesControl extends M.Control {
           const attrP = [];
           //console.log(values);
           values.forEach((v, index) => {
-            attrP.push({ value: v, align: aligns[index], type: typesdata[index], typeparam: typesparam[index] });
+            //console.log(index);
+            attrP.push({ 
+                value: v, 
+                align: aligns[index], 
+                // e2m: en vez de psar el valor de typesdata[index], lo trnasformamos en flags que se gestinan más fácil con Handlebars
+                //isPkColumn: index===0,
+                isLinkURL: typesdata[index] === 'linkURL',
+                isButtonURL: typesdata[index] === 'buttonURL',
+                isImage: typesdata[index] === 'image',
+                isString: typesdata[index] === 'string',
+                isPercentage: typesdata[index] === 'percentage',
+                isFormatter: typesdata[index] === 'formatter',
+                typeparam: typesparam[index] 
+            });
           });
 
           attributesParam.push(attrP);
+          //console.log(attrP);
         });
+        console.log(headerAtt);
         console.log(attributesParam);
         if (!M.utils.isUndefined(headerAtt)) {
           params = {
