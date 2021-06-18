@@ -261,14 +261,22 @@ export default class QueryAttributesControl extends M.Control {
               });
               if (filtered.length > 0) {
                 filtered.forEach((item) => {
-                  headerAtt.push({ name: attr, alias: item.alias });
+                  headerAtt.push({ 
+                      name: attr, 
+                      alias: item.alias,
+                      isPkColumn:item.type === 'pkcolumn'
+                    });
                   aligns.push(item.align);
                   typesdata.push(item.type);
                   typesparam.push(item.typeparam);
                 });
               }
             } else {
-              headerAtt.push({ name: attr, alias: attr });
+              headerAtt.push({ 
+                name: attr, 
+                alias: item.alias,
+                isPkColumn:item.type === 'pkcolumn'
+              });
               aligns.push('right');
               typesdata.push('string');
               typesparam.push('');
@@ -298,7 +306,6 @@ export default class QueryAttributesControl extends M.Control {
                   });
 
                   if (filtered.length > 0) {
-                    console.log(filtered);
                     filtered.forEach((item)=>{
                       newProperties.push(prop);
                     });
@@ -337,6 +344,7 @@ export default class QueryAttributesControl extends M.Control {
                 isString: typesdata[index] === 'string',
                 isPercentage: typesdata[index] === 'percentage',
                 isFormatter: typesdata[index] === 'formatter',
+                isPkColumn: typesdata[index] === 'pkcolumn',
                 typeparam: typesparam[index] 
             });
           });
@@ -344,8 +352,8 @@ export default class QueryAttributesControl extends M.Control {
           attributesParam.push(attrP);
           //console.log(attrP);
         });
-        console.log(headerAtt);
-        console.log(attributesParam);
+        //console.log(headerAtt);
+        //console.log(attributesParam);
         if (!M.utils.isUndefined(headerAtt)) {
           params = {
             headerAtt,
@@ -440,6 +448,7 @@ export default class QueryAttributesControl extends M.Control {
     const value = evt.target.parentNode.children[0].textContent.trim();
     const features = this.layer.getFeatures();
     const field = Object.keys(features[0].getAttributes())[0];
+    console.log(evt.target.parentNode);
     const filtered = features.filter((f) => {
       return this.compareStrings(`${f.getAttributes()[field]}`.trim(), value) === 0;
     });

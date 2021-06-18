@@ -30,7 +30,7 @@ const mp = new QueryAttributes({
     pk: 'id',
     initialSort: { name: 'nombre', dir: 'asc' },
     columns: [
-      { name: 'id', alias: 'pk', visible: true, align: 'right', type: 'string' },
+      { name: 'id', alias: 'pk', visible: true, align: 'right', type: 'pkcolumn' },
       { name: 'id', alias: 'Identificador', visible: true, align: 'right', type: 'string' },
       { name: 'nombre', alias: 'Nombre Vértice', visible: true, align: 'left', type: 'string' },
       { name: 'xutmetrs89', alias: 'Coordenada X (UTM ETRS89)', visible: false, align: 'left', type: 'string' },
