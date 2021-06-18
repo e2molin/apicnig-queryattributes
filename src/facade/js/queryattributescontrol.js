@@ -404,6 +404,7 @@ export default class QueryAttributesControl extends M.Control {
    * @param {array<string>} headerAtt - name attributes
    * @return {array<string>} attributes - Ordered attributes
    */
+  
   sortAttributes_(attributes, headerAtt) {
     const sortBy = this.sortProperties_.sortBy;
     let pos = 0;

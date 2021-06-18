@@ -42,7 +42,7 @@ const mp = new QueryAttributes({
       { name: 'nivel', alias: 'Vida útil', visible: false, align: 'left', type: 'percentage' },
       { name: 'urlficha', alias: 'URL PDF Ficha', visible: false, align: 'left', type: 'linkURL' },
       { name: 'urlcdd', alias: 'URL Centro Descargas', visible: false, align: 'left', type: 'buttonURL', typeparam:'🔗 Acceder' },
-      { name: 'hojamtn50', alias: 'Hoja MTN50', visible: true, align: 'left', type: 'string' },
+      { name: 'hojamtn50', alias: 'Hoja MTN50', visible: true, align: 'right', type: 'string' },
       { name: 'summary', alias: 'Localización', visible: false, align: 'left', type: 'string' },
       { name: 'imagemtn50', alias: 'Imagen Hoja MTN50', visible: true, align: 'left', type: 'image' },
       { name: 'description', alias: 'Descripción completa', visible: false, align: 'left', type: 'string' },
