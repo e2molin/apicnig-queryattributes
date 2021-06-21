@@ -19,7 +19,6 @@ const map = M.map({
   },
 });
 
-
 const mp = new QueryAttributes({
   position: 'TL',
   collapsed: true,
@@ -30,8 +29,7 @@ const mp = new QueryAttributes({
     pk: 'id',
     initialSort: { name: 'nombre', dir: 'asc' },
     columns: [
-      { name: 'id', alias: 'pk', visible: true, align: 'right', type: 'pkcolumn' },
-      { name: 'id', alias: 'Identificador', visible: true, align: 'right', type: 'string' },
+      { name: 'id', alias: 'Identificador', visible: false, align: 'right', type: 'string' },
       { name: 'nombre', alias: 'Nombre Vértice', visible: true, align: 'left', type: 'string' },
       { name: 'xutmetrs89', alias: 'Coordenada X (UTM ETRS89)', visible: false, align: 'left', type: 'string' },
       { name: 'yutmetrs89', alias: 'Coordenada Y (UTM ETRS89)', visible: false, align: 'left', type: 'string' },
@@ -39,10 +37,10 @@ const mp = new QueryAttributes({
       { name: 'lng', alias: 'Longitud', visible: false, align: 'left', type: 'string' },
       { name: 'horto', alias: 'Altitud Ortométrica', visible: false, align: 'left', type: 'string' },
       { name: 'calidad', alias: 'Calidad señal', visible: false, align: 'left', type: 'formatter', typeparam:'⭐️' },
-      { name: 'nivel', alias: 'Vida útil', visible: false, align: 'left', type: 'percentage' },
-      { name: 'urlficha', alias: 'URL PDF Ficha', visible: false, align: 'left', type: 'linkURL' },
-      { name: 'urlcdd', alias: 'URL Centro Descargas', visible: false, align: 'left', type: 'buttonURL', typeparam:'🔗 Acceder' },
-      { name: 'hojamtn50', alias: 'Hoja MTN50', visible: true, align: 'right', type: 'string' },
+      { name: 'nivel', alias: 'Vida útil', visible: true, align: 'left', type: 'percentage' },
+      { name: 'urlficha', alias: 'URL PDF Ficha', visible: true, align: 'left', type: 'linkURL' },
+      { name: 'urlcdd', alias: 'URL Centro Descargas', visible: true, align: 'left', type: 'buttonURL', typeparam:'🔗 Acceder' },
+      { name: 'hojamtn50', alias: 'Hoja MTN50', visible: false, align: 'right', type: 'string' },
       { name: 'summary', alias: 'Localización', visible: false, align: 'left', type: 'string' },
       { name: 'imagemtn50', alias: 'Imagen Hoja MTN50', visible: true, align: 'left', type: 'image' },
       { name: 'description', alias: 'Descripción completa', visible: false, align: 'left', type: 'string' },

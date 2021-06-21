@@ -161,6 +161,18 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
   cursor: pointer;
 }
 
+
+#m-queryattributes-search-results {
+  font-size: 0.9rem;
+  position: relative;
+  left: -15px;
+  top: 1px;
+  color:black;
+}
+
+
+
+
 /* Buttons */
 
 #m-queryattributes-options-buttons {

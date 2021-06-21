@@ -78,6 +78,17 @@ export default class QueryAttributesControl extends M.Control {
 
     this.configuration = configuration;
 
+    //e2m: add pk column to the beginning of configuration.columns
+    this.configuration.columns.unshift({ 
+        name: this.configuration.pk, 
+        alias: "pk", 
+        visible: true, 
+        align: "right", 
+        type: "pkcolumn" 
+    });
+
+    console.log(configuration);
+
     this.filters = filters;
 
     this.sortProperties_ = {
@@ -203,9 +214,10 @@ export default class QueryAttributesControl extends M.Control {
 
     html.querySelector('#m-queryattributes-filter #m-queryattributes-search-btn').addEventListener('click', this.searchFilter.bind(this));
     html.querySelector('#m-queryattributes-filter #m-queryattributes-search-input').addEventListener('keypress', (e) => {
-      if (e.keyCode === 13) {
-        this.searchFilter();
-      }
+      this.searchFilter();
+      // if (e.keyCode === 13) {
+      //   this.searchFilter();
+      // }
     });
 
     if (this.filters) {
@@ -234,7 +246,16 @@ export default class QueryAttributesControl extends M.Control {
 
   showAttributeTable(layerName, callback) {
     const columns = this.configuration.columns;
-    console.log(columns)
+    //const columns = this.configuration.columns.unshift({ name: this.configuration.pk, alias: "pk", visible: true, align: "right", type: "pkcolumn" });
+/**
+ * 
+ * .unshift({ name: "id", alias: this.configuration.pk, visible: true, align: "right", type: "pkcolumn" });
+ */
+
+
+    console.log(this.configuration.columns);
+    console.log(columns);
+
     //console.log(`****${layerName}`);
     if (!M.utils.isNullOrEmpty(layerName)) {
       this.layer = this.hasLayer_(layerName)[0];
@@ -247,12 +268,20 @@ export default class QueryAttributesControl extends M.Control {
       if (this.isLayerLoaded(this.layer)) {
         clearInterval(interval);
         document.getElementById('m-queryattributes-table').innerHTML = '';
+        document.getElementById('m-queryattributes-search-results').innerHTML = '';
         const headerAtt = [];
         const aligns = [];
         const typesdata = [];
         const typesparam = [];
         let attributes = [];
         const features = this.layer.getFeatures();
+        if (this.allFeatures.length!==features.length){
+          document.getElementById('m-queryattributes-search-results').innerHTML = `Filtrados ${features.length} de ${this.allFeatures.length} registros.`;
+        }else{
+          document.getElementById('m-queryattributes-search-results').innerHTML = `Total: ${this.allFeatures.length} registros. `;
+        }
+        
+        
         if (!M.utils.isNullOrEmpty(features)) {
           Object.keys(features[0].getAttributes()).forEach((attr) => {
             if (columns !== undefined && columns.length > 0) {
@@ -293,13 +322,6 @@ export default class QueryAttributesControl extends M.Control {
                 const newProperties = [];
                 //console.log(columns);
                 properties.forEach((prop, index) => {
-
-                  /*const pkFiltered = columns.filter((elem) => {
-                    return elem.name === keys[index] && elem.name === this.configuration.pk;
-                  });
-                  if (pkFiltered.length > 0) {
-                    newProperties.push(prop);
-                  }*/
 
                   const filtered = columns.filter((elem) => {
                     return elem.name === keys[index] && elem.visible;

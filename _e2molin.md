@@ -91,5 +91,11 @@ Definir que campos son searchables
 Buscar con keypress
 Iconos para indicar por cual de las columnas se ha ordenado
 Filtros por búsqueda facetada
+
+
+
+
+
+Cuando el campo identificador con el identificador del feature no se añade a la tabla (visible=0) no funciona. Añado la propiedad pk para definir el atributo del feature que contiene la clave principal.
 Cuando el campo identificador no se quiere mostrar, no funciona.
 
