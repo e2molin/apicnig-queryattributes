@@ -1,9 +1,12 @@
 <div id="m-queryattributes-initialview">
     <div id="m-queryattributes-filter" style="display: none;">
       <div class="m-queryattributes-search-container">
-        <input type="text" id="m-queryattributes-search-input" placeholder="{{translations.search}}..." />
+        <div id="m-queryattributes-searching-results">
+          <span class="icon-spinner" title="{{translations.search}}" />
+        </div>
+        <input type="text" id="m-queryattributes-search-input" placeholder="{{translations.search}}..." keypress="change"/>
         <span id="m-queryattributes-search-btn" class="icon-zoom" title="{{translations.search}}"></span>
-        <span id="m-queryattributes-search-results"></span>
+        <span id="m-queryattributes-search-results" />
       </div>
       {{#if filters}}
       <div class="m-queryattributes-filters-container">

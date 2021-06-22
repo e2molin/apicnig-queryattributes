@@ -161,6 +161,16 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
   cursor: pointer;
 }
 
+/*e2m: spinner de filtro de resultados */
+#m-queryattributes-searching-results {
+  position: absolute;
+  left: 240px;
+  top: 21px;
+  font-size: 1rem;
+  animation: rotate 1s linear infinite;
+  display:none;
+}
+
 
 #m-queryattributes-search-results {
   font-size: 0.9rem;
@@ -169,8 +179,6 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
   top: 1px;
   color:black;
 }
-
-
 
 
 /* Buttons */
@@ -289,6 +297,7 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
   font-size: 3rem;
   animation: rotate 1s linear infinite;
 }
+
 
 .m-queryattributes #m-queryattributes-options-information-container {
   padding: 0rem 1rem 1rem 1rem;

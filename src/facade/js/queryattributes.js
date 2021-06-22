@@ -90,7 +90,41 @@ export default class QueryAttributes extends M.Plugin {
       tooltip: getValue('tooltip'),
     });
 
-    this.control_ = new QueryAttributesControl(this.configuration_, this.filters_);
+    this.control_ = new QueryAttributesControl(this.configuration_, this.filters_, [function addOpenEvent(){
+                                                                                  const elem = document.querySelector('.m-panel.m-queryattributes.collapsed .m-panel-btn.icon-tabla');
+                                                                                  if (elem !== null) {
+                                                                                    elem.addEventListener('click', () => {
+                                                                                      const container = this.map_.getContainer().parentElement.parentElement;
+                                                                                      container.style.width = 'calc(100% - 530px)';
+                                                                                      container.style.position = 'fixed';
+                                                                                      if (this.position_ === 'TL') {
+                                                                                        container.style.left = '530px';
+                                                                                      } else {
+                                                                                        container.style.right = '530px';
+                                                                                      }
+                                                                              
+                                                                                      this.map_.refresh();
+                                                                                      this.addCloseEvent();
+                                                                                    });
+                                                                                  }
+                                                                                }, function addCloseEvent(){
+                                                                                  const elem = document.querySelector('.m-panel.m-queryattributes.opened .m-panel-btn');
+                                                                                  if (elem !== null) {
+                                                                                    elem.addEventListener('click', () => {
+                                                                                      const container = this.map_.getContainer().parentElement.parentElement;
+                                                                                      container.style.width = '100%';
+                                                                                      container.style.position = '';
+                                                                                      if (this.position_ === 'TL') {
+                                                                                        container.style.left = 'unset';
+                                                                                      } else {
+                                                                                        container.style.right = 'unset';
+                                                                                      }
+                                                                              
+                                                                                      this.map_.refresh();
+                                                                                      this.addOpenEvent();
+                                                                                    });
+                                                                                  }
+                                                                                }]);
     this.controls_.push(this.control_);
     this.panel_.addControls(this.controls_);
     map.addPanels(this.panel_);
@@ -111,7 +145,7 @@ export default class QueryAttributes extends M.Plugin {
     }
   }
 
-  addOpenEvent() {
+  addOpenEvent()  {
     const elem = document.querySelector('.m-panel.m-queryattributes.collapsed .m-panel-btn.icon-tabla');
     if (elem !== null) {
       elem.addEventListener('click', () => {

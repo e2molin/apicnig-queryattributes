@@ -23,7 +23,7 @@ export default class QueryAttributesControl extends M.Control {
    * @api stable
    */
 
-  constructor(configuration, filters) {
+  constructor(configuration, filters, events) {
     if (M.utils.isUndefined(QueryAttributesImplControl)) {
       M.exception(getValue('exception.impl'));
     }
@@ -87,7 +87,6 @@ export default class QueryAttributesControl extends M.Control {
         type: "pkcolumn" 
     });
 
-    console.log(configuration);
 
     this.filters = filters;
 
@@ -104,6 +103,10 @@ export default class QueryAttributesControl extends M.Control {
         sortType: configuration.initialSort.dir,
       };
     }
+
+    console.log(events);
+    this.addOpenEvent_=events[0];
+    this.addCloseEvent_=events[1];
   }
 
   /**
@@ -213,11 +216,17 @@ export default class QueryAttributesControl extends M.Control {
       });
 
     html.querySelector('#m-queryattributes-filter #m-queryattributes-search-btn').addEventListener('click', this.searchFilter.bind(this));
-    html.querySelector('#m-queryattributes-filter #m-queryattributes-search-input').addEventListener('keypress', (e) => {
+    html.querySelector('#m-queryattributes-filter #m-queryattributes-search-input').addEventListener('keyup', (e) => {
+      console.log(e);
       this.searchFilter();
       // if (e.keyCode === 13) {
       //   this.searchFilter();
       // }
+    });
+
+    html.querySelector('#m-queryattributes-search-input').addEventListener('change', (evt) => {
+      console.log("Hecho");
+      console.log(evt);
     });
 
     if (this.filters) {
@@ -246,17 +255,7 @@ export default class QueryAttributesControl extends M.Control {
 
   showAttributeTable(layerName, callback) {
     const columns = this.configuration.columns;
-    //const columns = this.configuration.columns.unshift({ name: this.configuration.pk, alias: "pk", visible: true, align: "right", type: "pkcolumn" });
-/**
- * 
- * .unshift({ name: "id", alias: this.configuration.pk, visible: true, align: "right", type: "pkcolumn" });
- */
 
-
-    console.log(this.configuration.columns);
-    console.log(columns);
-
-    //console.log(`****${layerName}`);
     if (!M.utils.isNullOrEmpty(layerName)) {
       this.layer = this.hasLayer_(layerName)[0];
       if (this.allFeatures === undefined) {
@@ -280,6 +279,8 @@ export default class QueryAttributesControl extends M.Control {
         }else{
           document.getElementById('m-queryattributes-search-results').innerHTML = `Total: ${this.allFeatures.length} registros. `;
         }
+        //e2m: ocultamos nuestro spinner de búsqueda.
+        this.html.querySelector('#m-queryattributes-searching-results').style.display = 'none';
         
         
         if (!M.utils.isNullOrEmpty(features)) {
@@ -658,55 +659,73 @@ export default class QueryAttributesControl extends M.Control {
 
     });
 
+/*
+    const container = this.map_.getContainer().parentElement.parentElement;
+    container.style.width = 'calc(100% - 530px)';
+    container.style.position = 'fixed';
+    container.style.left = '530px';
+    if (this.position_ === 'TL') {
+      container.style.left = '530px';
+    } else {
+      container.style.right = '530px';
+    }
+    console.log(this_.plugins);
+    this.map_.refresh();
+*/
+    this_.addOpenEvent_();
+
+
+
+
   }
 
-  addElementSelection4Info() {
+  // addElementSelection4Info() {
 
-    //this.map_.on(M.evt.CLICK, this.manageClic, this);
+  //   //this.map_.on(M.evt.CLICK, this.manageClic, this);
     
-    console.log(this.getColumnConfig(0));
-    let mapaOL = this.map.getMapImpl();
-    //console.log(this.configuration.layer);
-    console.log(mapaOL);
-    mapaOL.on('click', (evt) => {
-      console.log('Prueba singleclick en arrow function');
-      mapaOL.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+  //   console.log(this.getColumnConfig(0));
+  //   let mapaOL = this.map.getMapImpl();
+  //   //console.log(this.configuration.layer);
+  //   console.log(mapaOL);
+  //   mapaOL.on('click', (evt) => {
+  //     console.log('Prueba singleclick en arrow function');
+  //     mapaOL.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
 
 
-        //console.log(layer);
-        //console.log(feature);
-        //console.log(feature.getGeometry());
-        //console.log(evt.pixel)
+  //       //console.log(layer);
+  //       //console.log(feature);
+  //       //console.log(feature.getGeometry());
+  //       //console.log(evt.pixel)
 
 
-        var featureFacade = M.impl.Feature.olFeature2Facade(feature);
-        console.info(featureFacade.getAttributes());
+  //       var featureFacade = M.impl.Feature.olFeature2Facade(feature);
+  //       console.info(featureFacade.getAttributes());
         
-        const fields = [];
-        Object.entries(featureFacade.getAttributes()).forEach((entry) => {
+  //       const fields = [];
+  //       Object.entries(featureFacade.getAttributes()).forEach((entry) => {
 
           
-          /*fields.push({
-            name: config.alias,
-            value: entry[1],
-            isURL: config.type === 'url',
-            isImage: config.type === 'image',
-            isString: config.type === 'string',
-          });*/
-          const config = this_.getColumnConfig(entry[0]);
-          console.log(config);
-        });
+  //         /*fields.push({
+  //           name: config.alias,
+  //           value: entry[1],
+  //           isURL: config.type === 'url',
+  //           isImage: config.type === 'image',
+  //           isString: config.type === 'string',
+  //         });*/
+  //         const config = this_.getColumnConfig(entry[0]);
+  //         console.log(config);
+  //       });
        
 
 
 
 
 
-      });
-    });
-    console.log(this.map.getLayers());
+  //     });
+  //   });
+  //   console.log(this.map.getLayers());
 
-  }
+  // }
 
 
 
@@ -796,8 +815,13 @@ export default class QueryAttributesControl extends M.Control {
     });
   }
 
+
+  //e2m: búsqueda por filtro de texto.
   searchFilter() {
+   
+    this.html.querySelector('#m-queryattributes-searching-results').style.display = 'block';
     let text = this.html.querySelector('#m-queryattributes-filter #m-queryattributes-search-input').value;
+    console.log(text);
     text = this.normalizeString_(text);
     const filter = new M.filter.Function((feature) => {
       let res = false;
