@@ -101,3 +101,19 @@ Hecho
 Cuando el campo identificador con el identificador del feature no se añade a la tabla (visible=0) no funciona. Añado la propiedad pk para definir el atributo del feature que contiene la clave principal.
 Cuando el campo identificador no se quiere mostrar, no funciona.
 
+Búsquedas facetadas
+
+```javascript
+/*
+En contrar valores únicos en un array
+https://www.etnassoft.com/2011/06/24/array-unique-eliminar-valores-duplicados-de-un-array-en-javascript/
+*/
+
+Array.prototype.unique=function(a){
+  return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
+});
+
+var myArr = [ 1, 2, 3, 'foo', 'bar', 'Hello World', 2, 3, 'bar', 1, 4, 5];
+console.log( myArr.unique() ); // ["foo", "Hello World", 2, 3, "bar", 1, 4, 5]
+
+```
