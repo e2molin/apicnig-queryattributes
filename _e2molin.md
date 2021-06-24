@@ -116,4 +116,22 @@ Array.prototype.unique=function(a){
 var myArr = [ 1, 2, 3, 'foo', 'bar', 'Hello World', 2, 3, 'bar', 1, 4, 5];
 console.log( myArr.unique() ); // ["foo", "Hello World", 2, 3, "bar", 1, 4, 5]
 
+
+
+
+
+/*
+https://stackoverflow.com/questions/1960473/get-all-unique-values-in-a-javascript-array-remove-duplicates
+*/
+function onlyUnique(value, index, self) {
+  return self.indexOf(value) === index;
+}
+
+// usage example:
+var a = ['a', 1, 'a', 2, '1'];
+var unique = a.filter(onlyUnique);
+
+console.log(unique); // ['a', 1, 2, '1']
+
+
 ```
