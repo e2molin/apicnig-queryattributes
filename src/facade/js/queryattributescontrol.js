@@ -23,7 +23,7 @@ export default class QueryAttributesControl extends M.Control {
    * @api stable
    */
 
-  constructor(configuration, filters, events) {
+  constructor(configuration, filters, collapsed_, position_) {
     if (M.utils.isUndefined(QueryAttributesImplControl)) {
       M.exception(getValue('exception.impl'));
     }
@@ -78,6 +78,10 @@ export default class QueryAttributesControl extends M.Control {
 
     this.configuration = configuration;
 
+    this.collapsed = collapsed_;
+
+    this.position = position_;
+
     //e2m: add pk column to the beginning of configuration.columns
     this.configuration.columns.unshift({ 
         name: this.configuration.pk, 
@@ -104,9 +108,6 @@ export default class QueryAttributesControl extends M.Control {
       };
     }
 
-    console.log(events);
-    this.addOpenEvent_=events[0];
-    this.addCloseEvent_=events[1];
   }
 
   /**
@@ -186,6 +187,8 @@ export default class QueryAttributesControl extends M.Control {
       this.kmlLayers = this.map.getKML().map((layer) => {
         return { layer, loaded: false };
       });
+
+      console.log(this.collapsed);
 
       success(html);
       
@@ -429,6 +432,8 @@ export default class QueryAttributesControl extends M.Control {
    */
   
   sortAttributes_(attributes, headerAtt) {
+    console.log(attributes);
+    console.log(headerAtt);
     const sortBy = this.sortProperties_.sortBy;
     let pos = 0;
     headerAtt.forEach((elem, index) => {
@@ -617,7 +622,6 @@ export default class QueryAttributesControl extends M.Control {
 
   }
 
-
   actualizaInfo(evt){
 
     const this_ = this;
@@ -659,76 +663,27 @@ export default class QueryAttributesControl extends M.Control {
 
     });
 
-/*
+    this.addCierraPanelEvent();
     const container = this.map_.getContainer().parentElement.parentElement;
     container.style.width = 'calc(100% - 530px)';
     container.style.position = 'fixed';
-    container.style.left = '530px';
-    if (this.position_ === 'TL') {
-      container.style.left = '530px';
-    } else {
-      container.style.right = '530px';
-    }
-    console.log(this_.plugins);
-    this.map_.refresh();
-*/
-    this_.addOpenEvent_();
+     if (this_.position === 'TL') {
+       container.style.left = '530px';
+     } else {
+       container.style.right = '530px';
+     }
+
+     const elem = document.querySelector('.m-panel.m-queryattributes.collapsed');
+     if (elem !== null) {
+       elem.classList.remove("collapsed");
+       elem.classList.add("opened");
+     }
 
 
+     this.map_.refresh();
 
 
   }
-
-  // addElementSelection4Info() {
-
-  //   //this.map_.on(M.evt.CLICK, this.manageClic, this);
-    
-  //   console.log(this.getColumnConfig(0));
-  //   let mapaOL = this.map.getMapImpl();
-  //   //console.log(this.configuration.layer);
-  //   console.log(mapaOL);
-  //   mapaOL.on('click', (evt) => {
-  //     console.log('Prueba singleclick en arrow function');
-  //     mapaOL.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-
-
-  //       //console.log(layer);
-  //       //console.log(feature);
-  //       //console.log(feature.getGeometry());
-  //       //console.log(evt.pixel)
-
-
-  //       var featureFacade = M.impl.Feature.olFeature2Facade(feature);
-  //       console.info(featureFacade.getAttributes());
-        
-  //       const fields = [];
-  //       Object.entries(featureFacade.getAttributes()).forEach((entry) => {
-
-          
-  //         /*fields.push({
-  //           name: config.alias,
-  //           value: entry[1],
-  //           isURL: config.type === 'url',
-  //           isImage: config.type === 'image',
-  //           isString: config.type === 'string',
-  //         });*/
-  //         const config = this_.getColumnConfig(entry[0]);
-  //         console.log(config);
-  //       });
-       
-
-
-
-
-
-  //     });
-  //   });
-  //   console.log(this.map.getLayers());
-
-  // }
-
-
-
 
   /**
    * Add html option in Selects.
@@ -1264,4 +1219,70 @@ export default class QueryAttributesControl extends M.Control {
   equals(control) {
     return control instanceof QueryAttributesControl;
   }
+
+
+  addAbrePanelEvent()  {
+    const elem = document.querySelector('.m-panel.m-queryattributes.collapsed .m-panel-btn.icon-tabla');
+    console.log("openPanel");
+    if (elem !== null) {
+      console.log("openPanel evtClick");
+      elem.addEventListener('click', () => {
+        const container = this.map_.getContainer().parentElement.parentElement;
+        container.style.width = 'calc(100% - 530px)';
+        container.style.position = 'fixed';
+        if (this.position === 'TL') {
+          container.style.left = '530px';
+        } else {
+          container.style.right = '530px';
+        }
+
+        this.map_.refresh();
+        this.addCierraPanelEvent();
+      });
+      
+    }
+  }
+
+  addCierraPanelEvent() {
+    const elem = document.querySelector('.m-panel.m-queryattributes.opened .m-panel-btn');
+    console.log("closePanel");
+    if (elem !== null) {
+      console.log("closePanel evtClick");
+      elem.addEventListener('click', () => {
+        const container = this.map_.getContainer().parentElement.parentElement;
+        container.style.width = '100%';
+        container.style.position = '';
+        if (this.position_ === 'TL') {
+          container.style.left = 'unset';
+        } else {
+          container.style.right = 'unset';
+        }
+
+        this.map_.refresh();
+        this.addAbrePanelEvent();
+      });
+    }
+  }
+
+  initPanelAttributes(){
+
+    if ( this.collapsed){
+      this.addAbrePanelEvent();
+    }else{
+      this.addCierraPanelEvent();
+      const container = this.map_.getContainer().parentElement.parentElement;
+      container.style.width = 'calc(100% - 530px)';
+      container.style.position = 'fixed';
+       if (this.position === 'TL') {
+         container.style.left = '530px';
+       } else {
+         container.style.right = '530px';
+       }
+      this.map_.refresh();
+    }
+    console.log('Mensaje');
+
+
+  }
+
 }

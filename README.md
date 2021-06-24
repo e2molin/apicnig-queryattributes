@@ -118,11 +118,11 @@ map.addPlugin(mp);
 * Definimos el atributo con la clave principal de *featureset*. De esa manera no es necesario que la primera columna contenga este valor.
 * Mostramos información del número de elementos en la tabla y el número de elementos del filtro aplicado. Spinner para marcar tiempos de búsqueda.
 * Nuevos tipos de valores para dar más opciones de renderizar los valores.
-
+* Al pichar en un feature, debe abrirse el panel de QueryAttributtes si está colapsado. Falta cambiar el botón. Comptrobar secuencia con el Chrome Inspector.
 
 
 * Mejorar datos muestra
-* Al seleccionar un elemento, sus propiedades tiene que aparecer filtradas en la lista
+
 * Mejorar el aspecto visual de la información mostrada
 * Filtros por campo ?¿
 

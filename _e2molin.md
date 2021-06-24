@@ -85,16 +85,18 @@ Object.entries(featureFacade.getAttributes()).forEach((entry) => {
 });
 ```
 
+Falta
+
 Crear los tipos progressbar y formatter
 Formatear la tabla para que aparezcan imagenes, progressbar y formatter
 Definir que campos son searchables
 Buscar con keypress
 Iconos para indicar por cual de las columnas se ha ordenado
 Filtros por búsqueda facetada
+Abrir el panel de Query tables al hacer clci en un elemento
 
 
-
-
+Hecho
 
 Cuando el campo identificador con el identificador del feature no se añade a la tabla (visible=0) no funciona. Añado la propiedad pk para definir el atributo del feature que contiene la clave principal.
 Cuando el campo identificador no se quiere mostrar, no funciona.
