@@ -82,7 +82,10 @@ export default class QueryAttributesControl extends M.Control {
 
     this.position = position_;
 
-    //e2m: add pk column to the beginning of configuration.columns
+    //
+    /**
+     * e2m: add pk column to the beginning of configuration.columns 
+     */
     this.configuration.columns.unshift({ 
         name: this.configuration.pk, 
         alias: "pk", 
@@ -471,8 +474,12 @@ export default class QueryAttributesControl extends M.Control {
     return res;
   }
 
+  /**
+   * e2m:
+   * Procedimiento para mostrar información al hacer clic en el elemento de la tabla
+   * @param {*} evt 
+   */
   centerOnFeature(evt) {
-    console.log (evt);
     document.querySelector('#m-queryattributes-options-information-container').innerHTML = '';
     const value = evt.target.parentNode.children[0].textContent.trim();
     const features = this.layer.getFeatures();
@@ -493,11 +500,10 @@ export default class QueryAttributesControl extends M.Control {
         }
       }
 
-
-
       const fields = [];
       Object.entries(filtered[0].getAttributes()).forEach((entry) => {
         const config = this.getColumnConfig(entry[0]);
+        if (config.showpanelinfo === false) return;
         fields.push({
           name: config.alias,
           value: entry[1],
@@ -510,8 +516,6 @@ export default class QueryAttributesControl extends M.Control {
           typeparam: config.typeparam,
         });
       });
-
-
 
       const html = M.template.compileSync(information, {
         vars: {
@@ -532,6 +536,79 @@ export default class QueryAttributesControl extends M.Control {
     }
   }
 
+/**
+ * e2m:
+ * Procedimiento para mostrar información al hacer clic en el dfeature sobre la cartografía
+ * @param {*} evt 
+ */
+  actualizaInfo(evt){
+
+    const this_ = this;
+    const mapaOL = this.map.getMapImpl();
+
+    mapaOL.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+      var featureFacade = M.impl.Feature.olFeature2Facade(feature);
+      console.log(layer); // 📌 Necesito filtrar cuando la capa no es la adecuada
+      console.log(layer.get('name'));
+      const fields = [];
+      
+      Object.entries(featureFacade.getAttributes()).forEach((entry) => {
+        const config = this_.getColumnConfig(entry[0]);
+        if (config.showpanelinfo === false) return;
+        fields.push({
+          name: config.alias,
+          value: entry[1],
+          isLinkURL: config.type === 'linkURL',
+          isButtonURL: config.type === 'buttonURL',
+          isImage: config.type === 'image',
+          isString: config.type === 'string',
+          isPercentage: config.type === 'percentage',
+          isFormatter: config.type === 'formatter',
+          typeparam: config.typeparam,
+        });
+      });
+
+      const html = M.template.compileSync(information, {
+        vars: {
+          fields,
+          translations: {
+            close: getValue('close'),
+            information: getValue('information'),
+            show_hide: getValue('show_hide'),
+          },
+        },
+      });
+
+      this_.launchInfoWindow(html);
+
+    });
+
+    this.addCierraPanelEvent();
+    const container = this.map_.getContainer().parentElement.parentElement;
+    container.style.width = 'calc(100% - 530px)';
+    container.style.position = 'fixed';
+     if (this_.position === 'TL') {
+       container.style.left = '530px';
+     } else {
+       container.style.right = '530px';
+     }
+
+     const elem = document.querySelector('.m-panel.m-queryattributes.collapsed');
+     if (elem !== null) {
+       elem.classList.remove("collapsed");
+       elem.classList.add("opened");
+     }
+
+     this.map_.refresh();
+
+  }
+
+
+  /**
+   * e2m:
+   * Abre el sidepanel por código, cuando hacemos clic sobre uno de los features de la capa vectorial
+   * @param {*} html 
+   */
   launchInfoWindow(html){
 
     document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '25vh';// e2m:tamaño máximo cuando se muestra información
@@ -558,6 +635,9 @@ export default class QueryAttributesControl extends M.Control {
     });
 
   }
+
+
+  
 
 
 
@@ -629,68 +709,7 @@ export default class QueryAttributesControl extends M.Control {
 
   }
 
-  actualizaInfo(evt){
-
-    const this_ = this;
-    const mapaOL = this.map.getMapImpl();
-
-    mapaOL.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-      var featureFacade = M.impl.Feature.olFeature2Facade(feature);
-      console.log(layer); // 📌 Necesito filtrar cuando la capa no es la adecuada
-
-      const fields = [];
-      
-      Object.entries(featureFacade.getAttributes()).forEach((entry) => {
-        const config = this_.getColumnConfig(entry[0]);
-        fields.push({
-          name: config.alias,
-          value: entry[1],
-          isLinkURL: config.type === 'linkURL',
-          isButtonURL: config.type === 'buttonURL',
-          isImage: config.type === 'image',
-          isString: config.type === 'string',
-          isPercentage: config.type === 'percentage',
-          isFormatter: config.type === 'formatter',
-          typeparam: config.typeparam,
-        });
-      });
-
-      const html = M.template.compileSync(information, {
-        vars: {
-          fields,
-          translations: {
-            close: getValue('close'),
-            information: getValue('information'),
-            show_hide: getValue('show_hide'),
-          },
-        },
-      });
-
-      this_.launchInfoWindow(html);
-
-    });
-
-    this.addCierraPanelEvent();
-    const container = this.map_.getContainer().parentElement.parentElement;
-    container.style.width = 'calc(100% - 530px)';
-    container.style.position = 'fixed';
-     if (this_.position === 'TL') {
-       container.style.left = '530px';
-     } else {
-       container.style.right = '530px';
-     }
-
-     const elem = document.querySelector('.m-panel.m-queryattributes.collapsed');
-     if (elem !== null) {
-       elem.classList.remove("collapsed");
-       elem.classList.add("opened");
-     }
-
-
-     this.map_.refresh();
-
-
-  }
+  
 
   /**
    * Add html option in Selects.
@@ -788,7 +807,7 @@ export default class QueryAttributesControl extends M.Control {
     const searchbyColumn = document.getElementById("m-queryattributes-fieldselector").value;
     console.log(searchbyColumn);
     
-    //e2m: con esto busco en los valores de todos los campos
+    // e2m: con esto busco en los valores de todos los campos
     /*const filter = new M.filter.Function((feature) => {
       let res = false;
       Object.values(feature.getAttributes()).forEach((v) => {
@@ -807,16 +826,16 @@ export default class QueryAttributesControl extends M.Control {
      * Primero filtramos los campos con el aributo searchable = true
      * Después extraemos a un array lso nombres de los campos
      */
-    const searchingFields = this.configuration.columns.filter(item => {
+    const searchingFields = this.configuration.columns.filter((item) => {
       return item.searchable === true;
     }).map(field => field.name);
 
     const filter = new M.filter.Function((feature) => {
       let res = false;
       Object.entries(feature.getAttributes()).forEach((entry) => {
-        if (searchingFields.indexOf(entry[0])<0) return;
-        if (searchbyColumn!=='All'){
-          if (entry[0]!==searchbyColumn) return;
+        if (searchingFields.indexOf(entry[0]) < 0) return;
+        if (searchbyColumn !== 'All') {
+          if (entry[0] !== searchbyColumn) return;
         }
         const value = this.normalizeString_(entry[1]);
         if (value.indexOf(text) > -1) {
@@ -831,10 +850,10 @@ export default class QueryAttributesControl extends M.Control {
     this.filtered = true;
     this.oldFilter = filter;
     this.oldLayer = this.layer;
-    console.log( this.layer.getFeatures());
 
-    //e2m: aquí hay que comprobar que el resultado del filtro no es cero, porque se produce un error
-    if  (this.layer.getFeatures().length>0){
+    // e2m: aquí hay que comprobar que el resultado del filtro no es cero
+
+    if (this.layer.getFeatures().length > 0) {
       this.map.setBbox(this.getImpl().getLayerExtent(this.layer));
     }
     this.showAttributeTable(this.layer.name);
@@ -1263,12 +1282,9 @@ export default class QueryAttributesControl extends M.Control {
     return control instanceof QueryAttributesControl;
   }
 
-
-  addAbrePanelEvent()  {
+  addAbrePanelEvent() {
     const elem = document.querySelector('.m-panel.m-queryattributes.collapsed .m-panel-btn.icon-tabla');
-    console.log("openPanel");
     if (elem !== null) {
-      console.log("openPanel evtClick");
       elem.addEventListener('click', () => {
         const container = this.map_.getContainer().parentElement.parentElement;
         container.style.width = 'calc(100% - 530px)';
@@ -1278,19 +1294,15 @@ export default class QueryAttributesControl extends M.Control {
         } else {
           container.style.right = '530px';
         }
-
         this.map_.refresh();
         this.addCierraPanelEvent();
       });
-      
     }
   }
 
   addCierraPanelEvent() {
     const elem = document.querySelector('.m-panel.m-queryattributes.opened .m-panel-btn');
-    console.log("closePanel");
     if (elem !== null) {
-      console.log("closePanel evtClick");
       elem.addEventListener('click', () => {
         const container = this.map_.getContainer().parentElement.parentElement;
         container.style.width = '100%';
@@ -1307,25 +1319,20 @@ export default class QueryAttributesControl extends M.Control {
     }
   }
 
-  initPanelAttributes(){
-
-    if ( this.collapsed){
+  initPanelAttributes() {
+    if (this.collapsed) {
       this.addAbrePanelEvent();
-    }else{
+    } else {
       this.addCierraPanelEvent();
       const container = this.map_.getContainer().parentElement.parentElement;
       container.style.width = 'calc(100% - 530px)';
       container.style.position = 'fixed';
-       if (this.position === 'TL') {
-         container.style.left = '530px';
-       } else {
-         container.style.right = '530px';
-       }
+      if (this.position === 'TL') {
+        container.style.left = '530px';
+      } else {
+        container.style.right = '530px';
+      }
       this.map_.refresh();
     }
-    console.log('Mensaje');
-
-
   }
-
 }

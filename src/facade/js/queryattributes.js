@@ -90,11 +90,7 @@ export default class QueryAttributes extends M.Plugin {
       tooltip: getValue('tooltip'),
     });
 
-    this.control_ = new QueryAttributesControl(this.configuration_, 
-                                                this.filters_,
-                                                this.collapsed_,
-                                                this.position_);
-    
+    this.control_ = new QueryAttributesControl(this.configuration_, this.filters_, this.collapsed_, this.position_);
     this.controls_.push(this.control_);
     this.panel_.addControls(this.controls_);
     map.addPanels(this.panel_);

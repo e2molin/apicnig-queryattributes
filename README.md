@@ -58,6 +58,8 @@ Cada campo de la capa vectorial necesita un objeto para definirlo. Los atributos
 * **name**: nombre del campo en el *feature*.
 * **alias**: denominación del campo para mostrar,
 * **visible**: true/false. Se muestra o no en la tabla.
+* **searchable**: true/false. Indicamos si el campo atiende a filtros de texto.
+* **showpanelinfo**: true/false. Indicamos si el campo se muestra o no en la ventana de información.
 * **align**: right/left. Alineación horizontal en la celdilla de la tabla
 * **type**: tipo del campo
   * **string**: tipo de cadena. Por defecto.
@@ -69,7 +71,7 @@ Cada campo de la capa vectorial necesita un objeto para definirlo. Los atributos
 * **typeparam**: parámetros para complementar al atributo *type*.
   * **buttonURL**: texto que figura en el botón.
   * **formatter**: valor que se repite.
-* **searchable**: true/false. Indicamos si el campo a tiendo a filtros de texto.
+
 
 
 ## Ejemplo de definición del plugin
@@ -90,19 +92,26 @@ const mp = new QueryAttributes({
     pk: 'id',
     initialSort: { name: 'nombre', dir: 'asc' },
     columns: [
-      { name: 'id', alias: 'Identificador', visible: false, align: 'right', type: 'string', searchable: false },
-      { name: 'nombre', alias: 'Nombre Vértice', visible: true, align: 'left', type: 'string', searchable: true },
-      { name: 'xutmetrs89', alias: 'Coordenada X', visible: false, align: 'left', type: 'string', searchable: false },
-      { name: 'yutmetrs89', alias: 'Coordenada Y', visible: false, align: 'left', type: 'string', searchable: false },
-      { name: 'horto', alias: 'Altitud Ortométrica', visible: false, align: 'left', type: 'string', searchable: false },
-      { name: 'calidad', alias: 'Calidad', visible: false, align: 'left', type: 'formatter', typeparam:'⭐️', searchable: false },
-      { name: 'nivel', alias: 'Vida útil', visible: true, align: 'left', type: 'percentage', searchable: false },
-      { name: 'urlficha', alias: 'URL PDF Ficha', visible: true, align: 'left', type: 'linkURL', searchable: false },
-      { name: 'urlcdd', alias: 'Descargas', visible: true, align: 'left', type: 'buttonURL', typeparam:'🔗 Acceder', searchable: false },
-      { name: 'nivel', alias: 'Vida útil', visible: true, align: 'left', type: 'percentage', searchable: false },
-      { name: 'hojamtn50', alias: 'Hoja MTN50', visible: false, align: 'right', type: 'string', searchable: true },
-      { name: 'summary', alias: 'Localización', visible: false, align: 'left', type: 'string', searchable: true },
-      { name: 'imagemtn50', alias: 'Imagen Hoja MTN50', visible: true, align: 'left', type: 'image', searchable: false },
+      { 
+          name: 'id', 
+          alias: 'Identificador', 
+          visible: false, 
+          searchable: false , 
+          showpanelinfo: true, 
+          align: 'right', 
+          type: 'string'},
+      { name: 'nombre', alias: 'Nombre Vértice', visible: true, searchable: true, showpanelinfo: true, align: 'left', type: 'string'},
+      { name: 'xutmetrs89', alias: 'Coordenada X', visible: false, searchable: true, showpanelinfo: true, align: 'left', type: 'string'},
+      { name: 'yutmetrs89', alias: 'Coordenada Y', visible: false, searchable: true, showpanelinfo: true, align: 'left', type: 'string'},
+      { name: 'horto', alias: 'Altitud Ortométrica', visible: false, searchable: true, showpanelinfo: true, align: 'left', type: 'string'},
+      { name: 'calidad', alias: 'Calidad', visible: false, searchable: true, showpanelinfo: true, align: 'left', type: 'formatter', typeparam:'⭐️'},
+      { name: 'nivel', alias: 'Vida útil', visible: true, searchable: true, showpanelinfo: true, align: 'left', type: 'percentage'},
+      { name: 'urlficha', alias: 'URL PDF Ficha', visible: true, searchable: true, showpanelinfo: true, align: 'left', type: 'linkURL'},
+      { name: 'urlcdd', alias: 'Descargas', visible: true, searchable: true, showpanelinfo: true, align: 'left', type: 'buttonURL', typeparam:'🔗 Acceder'},
+      { name: 'nivel', alias: 'Vida útil', visible: true, searchable: true, showpanelinfo: true, align: 'left', type: 'percentage'},
+      { name: 'hojamtn50', alias: 'Hoja MTN50', visible: false, searchable: true, showpanelinfo: true, align: 'right', type: 'string'},
+      { name: 'summary', alias: 'Localización', visible: false, searchable: true, showpanelinfo: true, align: 'left', type: 'string'},
+      { name: 'imagemtn50', alias: 'Imagen Hoja MTN50', visible: true, searchable: true, showpanelinfo: true, align: 'left', type: 'image'},
     ],
   }
 });
@@ -120,6 +129,7 @@ map.addPlugin(mp);
 * Nuevos tipos de valores para dar más opciones de renderizar los valores.
 * Al pinchar en un feature, debe abrirse el panel de QueryAttributtes si está colapsado. Falta cambiar el botón. Comprobar secuencia con el Chrome Inspector.
 * Podemos definir en qué campos se realizan búsquedas de texto, utilizando la propiedad *searchable*.
+* Parametrizable una [whitelist] de campos que se muestran en Información.
 * Mediante un desplegable con los nombres de los campos *searchables* elegimos si buscamos todos los campos o por uno en particular.
 
 
@@ -127,10 +137,13 @@ map.addPlugin(mp);
 
 * Mejorar datos muestra.
 * Mejorar el aspecto visual de la información mostrada.
-* Parametrizable una [whitelist] de campos que se muestran en Información.
 *	Localización y resaltado en mapa del elemento a partir de hacer clic en un registro en registros. El registro debe quedar resaltado también en registros.
 * Al hacer clic sobre un elemento en el mapa, resaltar este en mapa, y mostrar resaltado en registros. Si está activado información mostrar la información del elemento. Botón de deseleccionar el elemento en el mapa
 * Configuración de ventanas **landscape**.
+* Detectar la capa donde pincho el feature.
+* Cuando fuerzo la apertura del sidebar, no aparece el botón con el icono de cerrar
+* Iconos para indicar por cual de las columnas se ha ordenado
+
 
 ### 🔸 Aplicación de nomenclátor
 
@@ -138,7 +151,7 @@ Es necesario preparar una API de consulta del NGBE para que **QueryAttributes** 
 
 ### 🔸 Aplicación de sismología
 
-
+En este caso es necesario contar con una capa vectorial dinámica pero de tipo temporal, esto es, que refresque sus elementos no por un cambio de vista, sino cada cierto intervalo de tiempo.
 
 
 
@@ -149,9 +162,9 @@ Es necesario preparar una API de consulta del NGBE para que **QueryAttributes** 
 
 ## 📸 Capturas 👷
 
-![](img/captura01.jpg)
+![](assets/captura01.jpg)
 
-![](img/captura02.jpg)
+![](assets/captura02.jpg)
 
 ## 👨‍💻 Desarrollo
 

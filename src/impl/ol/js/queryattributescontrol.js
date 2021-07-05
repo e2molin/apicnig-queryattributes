@@ -13,39 +13,8 @@ export default class QueryAttributesControl extends M.impl.Control {
    */
   addTo(map, html) {
     super.addTo(map, html);
-
     this.facadeMap = map;
-    console.log("addTo");
-    //this.addSingleClic();
   }
-
-  addSingleClic() {
-    // this.getImpl().addSingleClic()
-    console.log('Manejo SingleClic');
-    console.log(this.map);
-    console.log(this.facadeMap);
-    let mapaOL = this.facadeMap.getMapImpl();
-    mapaOL.on('singleclick', (evt) => {
-      console.log('Prueba');
-      mapaOL.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-        console.log(layer);
-        console.log(feature);
-        console.log(feature.getGeometry());
-        var featureFacade = M.impl.Feature.olFeature2Facade(feature);
-        const filter = M.filter.spatial.INTERSECT(featureFacade.getGeometry());
-        console.log(filter);
-        console.log(this.facadeMap.getLayers());
-      });
-      
-
-    });
-  }
-
-  addSelectPointInteraction(callback) {
-
-  }
-
-
 
   // e2m: al pulsar en Buscar por área añadimos la interacción
   addDrawInteraction(callback) {
@@ -80,7 +49,6 @@ export default class QueryAttributesControl extends M.impl.Control {
     this.facadeMap.getMapImpl().addInteraction(draw);
     document.querySelector('div.m-mapea-container').style.cursor = 'crosshair';
     draw.once('drawend', (evt) => {
-      console.log("Termino de pintar");
       setTimeout(() => {
         document.querySelector('div.m-mapea-container').style.cursor = 'default';
         callback();

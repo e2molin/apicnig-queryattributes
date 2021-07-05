@@ -16,7 +16,6 @@
     "Draggabilly": true,
     "XMLSerializer": true
   },
-  "ignorePatterns": ["**/*.js"],
   "rules": {
     "no-underscore-dangle": ["error", { "allowAfterThis": true }],
     "import/extensions": ["error", "never"],
