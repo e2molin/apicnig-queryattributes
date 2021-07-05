@@ -94,6 +94,7 @@ Buscar con keypress
 Iconos para indicar por cual de las columnas se ha ordenado
 Filtros por búsqueda facetada
 Abrir el panel de Query tables al hacer clci en un elemento
+Cuando fuerzo la apertura del sidebar, no aparece el botón con el icono de cerrar
 
 
 Hecho

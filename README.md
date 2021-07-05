@@ -26,7 +26,6 @@ Plugin que permite aplicar filtros sobre las capas de un mapa y visualizar de fo
 - queryattributes.ol.min.js
 - queryattributes.ol.min.css
 
-
 ```html
  <link href="../../plugins/queryattributes/queryattributes.ol.min.css" rel="stylesheet" />
  <script type="text/javascript" src="../../plugins/queryattributes/queryattributes.ol.min.js"></script>
@@ -52,7 +51,7 @@ El constructor se inicializa con un JSON de _options_ con los siguientes atribut
     - **dir**: sentido de ordenación [asc, desc]
   - **columns**: array de objetos con la definición de los campos para la tabla de atributos
 
-### Definición de campos
+### 🔸 Definición de campos
 
 Cada campo de la capa vectorial necesita un objeto para definirlo. Los atributos del objeto son
 
@@ -70,6 +69,7 @@ Cada campo de la capa vectorial necesita un objeto para definirlo. Los atributos
 * **typeparam**: parámetros para complementar al atributo *type*.
   * **buttonURL**: texto que figura en el botón.
   * **formatter**: valor que se repite.
+* **searchable**: true/false. Indicamos si el campo a tiendo a filtros de texto.
 
 
 ## Ejemplo de definición del plugin
@@ -90,19 +90,19 @@ const mp = new QueryAttributes({
     pk: 'id',
     initialSort: { name: 'nombre', dir: 'asc' },
     columns: [
-      { name: 'id', alias: 'Identificador', visible: false, align: 'right', type: 'string' },
-      { name: 'nombre', alias: 'Nombre Vértice', visible: true, align: 'left', type: 'string' },
-      { name: 'xutmetrs89', alias: 'Coordenada X', visible: false, align: 'left', type: 'string' },
-      { name: 'yutmetrs89', alias: 'Coordenada Y', visible: false, align: 'left', type: 'string' },
-      { name: 'horto', alias: 'Altitud Ortométrica', visible: false, align: 'left', type: 'string' },
-      { name: 'calidad', alias: 'Calidad', visible: false, align: 'left', type: 'formatter', typeparam:'⭐️' },
-      { name: 'nivel', alias: 'Vida útil', visible: true, align: 'left', type: 'percentage' },
-      { name: 'urlficha', alias: 'URL PDF Ficha', visible: true, align: 'left', type: 'linkURL' },
-      { name: 'urlcdd', alias: 'Descargas', visible: true, align: 'left', type: 'buttonURL', typeparam:'🔗 Acceder' },
-      { name: 'nivel', alias: 'Vida útil', visible: true, align: 'left', type: 'percentage' },
-      { name: 'hojamtn50', alias: 'Hoja MTN50', visible: false, align: 'right', type: 'string' },
-      { name: 'summary', alias: 'Localización', visible: false, align: 'left', type: 'string' },
-      { name: 'imagemtn50', alias: 'Imagen Hoja MTN50', visible: true, align: 'left', type: 'image' },
+      { name: 'id', alias: 'Identificador', visible: false, align: 'right', type: 'string', searchable: false },
+      { name: 'nombre', alias: 'Nombre Vértice', visible: true, align: 'left', type: 'string', searchable: true },
+      { name: 'xutmetrs89', alias: 'Coordenada X', visible: false, align: 'left', type: 'string', searchable: false },
+      { name: 'yutmetrs89', alias: 'Coordenada Y', visible: false, align: 'left', type: 'string', searchable: false },
+      { name: 'horto', alias: 'Altitud Ortométrica', visible: false, align: 'left', type: 'string', searchable: false },
+      { name: 'calidad', alias: 'Calidad', visible: false, align: 'left', type: 'formatter', typeparam:'⭐️', searchable: false },
+      { name: 'nivel', alias: 'Vida útil', visible: true, align: 'left', type: 'percentage', searchable: false },
+      { name: 'urlficha', alias: 'URL PDF Ficha', visible: true, align: 'left', type: 'linkURL', searchable: false },
+      { name: 'urlcdd', alias: 'Descargas', visible: true, align: 'left', type: 'buttonURL', typeparam:'🔗 Acceder', searchable: false },
+      { name: 'nivel', alias: 'Vida útil', visible: true, align: 'left', type: 'percentage', searchable: false },
+      { name: 'hojamtn50', alias: 'Hoja MTN50', visible: false, align: 'right', type: 'string', searchable: true },
+      { name: 'summary', alias: 'Localización', visible: false, align: 'left', type: 'string', searchable: true },
+      { name: 'imagemtn50', alias: 'Imagen Hoja MTN50', visible: true, align: 'left', type: 'image', searchable: false },
     ],
   }
 });
@@ -111,24 +111,47 @@ map.addPlugin(mp);
 ```
 
 
-
-## Mejoras 👷
+## ✅ Mejoras 👷
 
 * Nueva documentación del plugin.
+* Las búsquedas por texto se realizan al cambiar el contenido de la caja de texto o al pulsar sobre la lupita.
 * Definimos el atributo con la clave principal de *featureset*. De esa manera no es necesario que la primera columna contenga este valor.
-* Mostramos información del número de elementos en la tabla y el número de elementos del filtro aplicado. Spinner para marcar tiempos de búsqueda.
+* Mostramos información del número de elementos en la tabla y el número de elementos del filtro aplicado. *Spinner* para marcar tiempos de búsqueda.
 * Nuevos tipos de valores para dar más opciones de renderizar los valores.
-* Al pichar en un feature, debe abrirse el panel de QueryAttributtes si está colapsado. Falta cambiar el botón. Comptrobar secuencia con el Chrome Inspector.
+* Al pinchar en un feature, debe abrirse el panel de QueryAttributtes si está colapsado. Falta cambiar el botón. Comprobar secuencia con el Chrome Inspector.
+* Podemos definir en qué campos se realizan búsquedas de texto, utilizando la propiedad *searchable*.
+* Mediante un desplegable con los nombres de los campos *searchables* elegimos si buscamos todos los campos o por uno en particular.
 
 
-* Mejorar datos muestra
+## ❌ Falta
 
-* Mejorar el aspecto visual de la información mostrada
-* Filtros por campo ?¿
+* Mejorar datos muestra.
+* Mejorar el aspecto visual de la información mostrada.
+* Parametrizable una [whitelist] de campos que se muestran en Información.
+*	Localización y resaltado en mapa del elemento a partir de hacer clic en un registro en registros. El registro debe quedar resaltado también en registros.
+* Al hacer clic sobre un elemento en el mapa, resaltar este en mapa, y mostrar resaltado en registros. Si está activado información mostrar la información del elemento. Botón de deseleccionar el elemento en el mapa
+* Configuración de ventanas **landscape**.
+
+### 🔸 Aplicación de nomenclátor
+
+Es necesario preparar una API de consulta del NGBE para que **QueryAttributes** cumpla con las necesidades del visor de Nomenclátor. También a nivel de APICore sería necesario un objeto capa vectorial dinámico: Esta capa recargaría sus elementos cada vez que se realiza un cambio de vista (panning o zooming) mediante una petición al servidor. Esta petición también incluiría la posibilidad de redefinir los patrámetros de los filtro aplicados.
+
+### 🔸 Aplicación de sismología
+
+
+
+
+
+## 🐛 Problemas
+
+* Al definir cual de los campos actúa como clave principal ys no es necesario quer el campo id aparezca en la tabla. Antes daba fallo. **Solucionado**.
+* Cuando al aplicar filtros de texto no se obtienen elementos que lo satisfagan, daba un error al hacer zoom al resultado. **Solucionado**.
 
 ## 📸 Capturas 👷
 
-Lorem ipsum asdkjasjdlajldjal
+![](img/captura01.jpg)
+
+![](img/captura02.jpg)
 
 ## 👨‍💻 Desarrollo
 

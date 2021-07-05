@@ -602,16 +602,23 @@ export default class QueryAttributesControl extends M.Control {
    * @param {Map} map
    */
   createInitialView(map) {
+
+    const searchingFields = this.configuration.columns.filter(item => {
+      return item.searchable === true;
+    });
+
     const options = {
       jsonp: true,
       vars: {
         filters: this.filters,
+        searchableFields: searchingFields,
         translations: {
           filters: getValue('filters'),
           bbox: getValue('bbox'),
           area: getValue('area'),
           loading: getValue('loading'),
           search: getValue('search'),
+          search_all_fields: getValue('search_all_fields'),
           filter_by_bbox: getValue('filter_by_bbox'),
           filter_by_area: getValue('filter_by_area'),
         },
@@ -778,22 +785,58 @@ export default class QueryAttributesControl extends M.Control {
     let text = this.html.querySelector('#m-queryattributes-filter #m-queryattributes-search-input').value;
     console.log(text);
     text = this.normalizeString_(text);
-    const filter = new M.filter.Function((feature) => {
+    const searchbyColumn = document.getElementById("m-queryattributes-fieldselector").value;
+    console.log(searchbyColumn);
+    
+    //e2m: con esto busco en los valores de todos los campos
+    /*const filter = new M.filter.Function((feature) => {
       let res = false;
       Object.values(feature.getAttributes()).forEach((v) => {
+        console.log(v);
         const value = this.normalizeString_(v);
         if (value.indexOf(text) > -1) {
           res = true;
         }
       });
+      return res;
+    });*/
 
+    /**
+     * e2m:
+     * Con esto busco en los campos con la propiedad searchable true
+     * Primero filtramos los campos con el aributo searchable = true
+     * Después extraemos a un array lso nombres de los campos
+     */
+    const searchingFields = this.configuration.columns.filter(item => {
+      return item.searchable === true;
+    }).map(field => field.name);
+
+    const filter = new M.filter.Function((feature) => {
+      let res = false;
+      Object.entries(feature.getAttributes()).forEach((entry) => {
+        if (searchingFields.indexOf(entry[0])<0) return;
+        if (searchbyColumn!=='All'){
+          if (entry[0]!==searchbyColumn) return;
+        }
+        const value = this.normalizeString_(entry[1]);
+        if (value.indexOf(text) > -1) {
+          res = true;
+        }
+      });
       return res;
     });
+
+
     this.layer.setFilter(filter);
     this.filtered = true;
     this.oldFilter = filter;
     this.oldLayer = this.layer;
-    this.map.setBbox(this.getImpl().getLayerExtent(this.layer));
+    console.log( this.layer.getFeatures());
+
+    //e2m: aquí hay que comprobar que el resultado del filtro no es cero, porque se produce un error
+    if  (this.layer.getFeatures().length>0){
+      this.map.setBbox(this.getImpl().getLayerExtent(this.layer));
+    }
     this.showAttributeTable(this.layer.name);
     const buttons = '#m-queryattributes-options-buttons>button';
     document.querySelector(`${buttons}#limpiar-filtro-btn`).style.display = 'block';
