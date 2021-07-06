@@ -127,3 +127,7 @@ console.log(unique); // ['a', 1, 2, '1']
 
 
 ```
+
+### Handlebars
+
+https://jonathanmh.com/handlebars-custom-helpers-chaining/

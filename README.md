@@ -123,7 +123,7 @@ map.addPlugin(mp);
 ## ✅ Terminado
 
 * Nueva documentación del plugin.
-* Mejora del aspecto visual de la información mostrada con la incorporación de elementos como imágenes, barras de progreso, formateadores de texto, aspecto viosual de los hipervínculos
+* Mejora del aspecto visual de la información mostrada con la incorporación de elementos como imágenes, barras de progreso, formateadores de texto, aspecto visual de los hipervínculos
 * Las búsquedas por texto se realizan al cambiar el contenido de la caja de texto o al pulsar sobre la lupita.
 * Definimos el atributo con la clave principal de *featureset*. De esa manera no es necesario que la primera columna contenga este valor.
 * Mostramos información del número de elementos en la tabla y el número de elementos del filtro aplicado. *Spinner* para marcar tiempos de búsqueda.

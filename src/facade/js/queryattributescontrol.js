@@ -137,40 +137,13 @@ export default class QueryAttributesControl extends M.Control {
             continue;
           }
           const symbolPattern= options.data.root.fields[k].typeparam;
+          const numRepeat= options.data.root.fields[k].value;
           var output = "";
+          console.log(`${symbolPattern} * ${numRepeat}`);
           for (let i = 0; i < options.data.root.fields[k].value; i++) {
             output += symbolPattern;
           }
         }
-        return output;
-      });
-
-      //e2m: no consigo que funcione bien este helper
-      Handlebars.registerHelper("patterntable", function (options){
-        console.log(options);
-        //console.log(options.data.root.attributes[150]);
-        let symbolPattern = "";
-        let numRepeat = 0;
-        let output = "";
-        options.data.root.attributes.forEach(element => {
-          try {
-            element.forEach(item => {
-              if(item.isFormatter){
-                  symbolPattern = item.typeparam;
-                  numRepeat= item.value;
-                  console.log(`${symbolPattern} * ${numRepeat}`);
-                  output = "";
-                  for (let i = 0; i < numRepeat; i++) {
-                    output += symbolPattern;
-                  }
-                  console.log(output);
-                  return output;            
-              }
-            });
-          } catch (error) {
-            console.log(error);
-          }
-        });
         return output;
       });
 
@@ -347,8 +320,9 @@ export default class QueryAttributesControl extends M.Control {
                 console.log("Hola");
               }
             }
-            //console.log(attributes);
+            
           });
+          console.log(attributes);
           
           if (this.sortProperties_.active) {
             attributes = this.sortAttributes_(attributes, headerAtt);
@@ -365,7 +339,7 @@ export default class QueryAttributesControl extends M.Control {
             attrP.push({ 
                 value: v, 
                 align: aligns[index], 
-                // e2m: en vez de psar el valor de typesdata[index], lo trnasformamos en flags que se gestinan más fácil con Handlebars
+                // e2m: en vez de pasar el valor de typesdata[index], lo trnasformamos en flags que se gestionan más fácil con Handlebars
                 //isPkColumn: index===0,
                 isLinkURL: typesdata[index] === 'linkURL',
                 isButtonURL: typesdata[index] === 'buttonURL',
@@ -382,7 +356,7 @@ export default class QueryAttributesControl extends M.Control {
           //console.log(attrP);
         });
         //console.log(headerAtt);
-        //console.log(attributesParam);
+        console.log(attributesParam);
         if (!M.utils.isUndefined(headerAtt)) {
           params = {
             headerAtt,
@@ -392,7 +366,56 @@ export default class QueryAttributesControl extends M.Control {
         }
 
         params.translations = { not_attributes: getValue('not_attributes') };
-        const options = { jsonp: true, vars: params };
+
+
+
+        //e2m: no consigo que funcione bien este helper
+        Handlebars.registerHelper("patterntable", function (options){
+          console.log(options);
+          //console.log(options.data.root.attributes[150]);
+          let symbolPattern = "";
+          let numRepeat = 0;
+          let output = "";
+          options.data.root.attributes.forEach(element => {
+            try {
+              element.forEach(item => {
+                if(item.isFormatter){
+                    symbolPattern = item.typeparam;
+                    numRepeat= item.value;
+                    //console.log(`${symbolPattern} * ${numRepeat}`);
+                    output = "";
+                    for (let i = 0; i < numRepeat; i++) {
+                      output += symbolPattern;
+                    }
+                    //console.log(output);
+                    return output;            
+                }
+              });
+            } catch (error) {
+              console.log(error);
+            }
+          });
+          return output;
+        });
+
+
+        Handlebars.registerHelper('formatterStr', function(item){
+          let symbolPattern = "";
+          let numRepeat = 0;
+          let output = "";
+          numRepeat= item.value;
+          symbolPattern = item.typeparam;
+          for (let i = 0; i < numRepeat; i++) {
+            output += symbolPattern;
+          }          
+          return output;
+        });
+
+
+        const options = { 
+                jsonp: true, 
+                vars: params 
+        };
         const html = M.template.compileSync(tabledata, options);
         document.getElementById('m-queryattributes-table').appendChild(html);
         document.getElementById('m-queryattributes-filter').style.display = 'flex';
@@ -435,8 +458,7 @@ export default class QueryAttributesControl extends M.Control {
    */
   
   sortAttributes_(attributes, headerAtt) {
-    console.log(attributes);
-    console.log(headerAtt);
+
     const sortBy = this.sortProperties_.sortBy;
     let pos = 0;
     headerAtt.forEach((elem, index) => {
@@ -550,6 +572,7 @@ export default class QueryAttributesControl extends M.Control {
       var featureFacade = M.impl.Feature.olFeature2Facade(feature);
       console.log(layer); // 📌 Necesito filtrar cuando la capa no es la adecuada
       console.log(layer.get('name'));
+      console.log(layer.getProperties());
       const fields = [];
       
       Object.entries(featureFacade.getAttributes()).forEach((entry) => {

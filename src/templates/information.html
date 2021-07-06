@@ -9,11 +9,10 @@
   <div>
     {{#each fields}}
       <p>
-
         {{#if isLinkURL}}
           <span class="lbl-descript">🔹 {{this.name}}:</span>
           <br/>        
-          <a href="{{this.value}}" target="_blank" rel="noopener noreferrer">{{this.value}}</a>
+          <a href="{{this.value}}" target="_blank" rel="noopener noreferrer">{{this.typeparam}}</a>
         {{/if}}
 
         {{#if isButtonURL}}

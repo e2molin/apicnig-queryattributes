@@ -27,7 +27,7 @@
                         <td style="display:none;"> {{this.value}}</td>
                       {{/if}}                      
                       {{#if isFormatter}}
-                        <td style="text-align:{{this.align}};">{{this.value}} * {{this.typeparam}}</td>
+                        <td style="text-align:{{this.align}}; font-size:0.5rem;">{{formatterStr this}}</td>
                       {{/if}}
                       {{#if isPercentage}}
                         <td style="text-align:{{this.align}};"><progress value="{{this.value}}" max="100"> {{this.value}} % </progress> {{this.value}} %</td>
