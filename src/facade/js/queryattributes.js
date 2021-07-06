@@ -96,7 +96,7 @@ export default class QueryAttributes extends M.Plugin {
     map.addPanels(this.panel_);
     this.control_.initPanelAttributes();
 
-    //e2m: Lo meto en el control
+    // e2m: Lo meto en el control
     // if (this.collapsed_) {
     //   this.addOpenEvent();
     // } else {
@@ -111,10 +111,10 @@ export default class QueryAttributes extends M.Plugin {
     //    }
     //    this.map_.refresh();
     // }
-
   }
 
-  //e2m: Lo meto en el control
+  // e2m: Lo meto en el control
+  /* eslint max-len: ["error", { "code": 150 }] */
   // addOpenEvent()  {
   //   const elem = document.querySelector('.m-panel.m-queryattributes.collapsed .m-panel-btn.icon-tabla');
   //   console.log("openPanel");
@@ -135,7 +135,7 @@ export default class QueryAttributes extends M.Plugin {
   //   }
   // }
 
-  //e2m: Lo meto en el control
+  // e2m: Lo meto en el control
   // addCloseEvent() {
   //   const elem = document.querySelector('.m-panel.m-queryattributes.opened .m-panel-btn');
   //   console.log("closePanel");

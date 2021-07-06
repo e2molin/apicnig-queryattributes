@@ -82,18 +82,16 @@ export default class QueryAttributesControl extends M.Control {
 
     this.position = position_;
 
-    //
     /**
-     * e2m: add pk column to the beginning of configuration.columns 
+     * e2m: add pk column to the beginning of configuration.columns
      */
-    this.configuration.columns.unshift({ 
-        name: this.configuration.pk, 
-        alias: "pk", 
-        visible: true, 
-        align: "right", 
-        type: "pkcolumn" 
+    this.configuration.columns.unshift({
+      name: this.configuration.pk,
+      alias: 'pk',
+      visible: true,
+      align: 'right',
+      type: 'pkcolumn',
     });
-
 
     this.filters = filters;
 
@@ -110,7 +108,6 @@ export default class QueryAttributesControl extends M.Control {
         sortType: configuration.initialSort.dir,
       };
     }
-
   }
 
   /**
@@ -130,20 +127,28 @@ export default class QueryAttributesControl extends M.Control {
        * Helper for Formatter Elements.
        * Symbol = param * value;
        */
-      Handlebars.registerHelper("pattern", function (options){
-        for (let k in options.data.root.fields) {
-          if (!options.data.root.fields[k].isFormatter) continue;
-          if (options.data.root.fields[k].typeparam === undefined){
-            continue;
-          }
-          const symbolPattern= options.data.root.fields[k].typeparam;
-          const numRepeat= options.data.root.fields[k].value;
-          var output = "";
-          console.log(`${symbolPattern} * ${numRepeat}`);
-          for (let i = 0; i < options.data.root.fields[k].value; i++) {
+      Handlebars.registerHelper('pattern', (options) => {
+        let output = '';
+        // for (const k in options.data.root.fields) {
+        //   if (!options.data.root.fields[k].isFormatter) continue;
+        //   if (options.data.root.fields[k].typeparam === undefined) {
+        //     continue;
+        //   }
+        //   const symbolPattern = options.data.root.fields[k].typeparam;
+        //   const numRepeat = options.data.root.fields[k].value;
+        //   for (let i = 0; i < numRepeat; i += 1) {
+        //     output += symbolPattern;
+        //   }
+        // }
+        options.data.root.fields.forEach((field) => {
+          if (!field.isFormatter) return;
+          if (field.typeparam === undefined) return;
+          const symbolPattern = field.typeparam;
+          const numRepeat = field.value;
+          for (let i = 0; i < numRepeat; i += 1) {
             output += symbolPattern;
           }
-        }
+        });
         return output;
       });
 
@@ -159,20 +164,12 @@ export default class QueryAttributesControl extends M.Control {
 
       html.querySelector('#m-queryattributes-options-container').appendChild(this.initialView);
       this.addEvents(html);
-      
       this.kmlLayers = this.map.getKML().map((layer) => {
         return { layer, loaded: false };
       });
-
-      console.log(this.collapsed);
-
       success(html);
-      
     });
   }
-
-
-
 
   /**
    * Adds event listeners to several HTML elements.
@@ -198,14 +195,10 @@ export default class QueryAttributesControl extends M.Control {
     html.querySelector('#m-queryattributes-filter #m-queryattributes-search-input').addEventListener('keyup', (e) => {
       console.log(e);
       this.searchFilter();
+      // e2m: en vez de esperar al Enter para buscar, lo hace en cada pulsación
       // if (e.keyCode === 13) {
       //   this.searchFilter();
       // }
-    });
-
-    html.querySelector('#m-queryattributes-search-input').addEventListener('change', (evt) => {
-      console.log("Hecho");
-      console.log(evt);
     });
 
     if (this.filters) {
@@ -229,7 +222,6 @@ export default class QueryAttributesControl extends M.Control {
         this.setBboxFilter();
       });
     }
-
   }
 
   showAttributeTable(layerName, callback) {
@@ -253,15 +245,15 @@ export default class QueryAttributesControl extends M.Control {
         const typesparam = [];
         let attributes = [];
         const features = this.layer.getFeatures();
-        if (this.allFeatures.length!==features.length){
+        if (this.allFeatures.length !== features.length) {
           document.getElementById('m-queryattributes-search-results').innerHTML = `Filtrados ${features.length} de ${this.allFeatures.length} registros.`;
-        }else{
+        } else {
           document.getElementById('m-queryattributes-search-results').innerHTML = `Total: ${this.allFeatures.length} registros. `;
         }
-        //e2m: ocultamos nuestro spinner de búsqueda.
+        // e2m: ocultamos nuestro spinner de búsqueda.
         this.html.querySelector('#m-queryattributes-searching-results').style.display = 'none';
-        
-        
+
+
         if (!M.utils.isNullOrEmpty(features)) {
           Object.keys(features[0].getAttributes()).forEach((attr) => {
             if (columns !== undefined && columns.length > 0) {
@@ -270,60 +262,50 @@ export default class QueryAttributesControl extends M.Control {
               });
               if (filtered.length > 0) {
                 filtered.forEach((item) => {
-                  headerAtt.push({ 
-                      name: attr, 
-                      alias: item.alias,
-                      isPkColumn:item.type === 'pkcolumn'
-                    });
+                  headerAtt.push({
+                    name: attr,
+                    alias: item.alias,
+                    isPkColumn: item.type === 'pkcolumn',
+                  });
                   aligns.push(item.align);
                   typesdata.push(item.type);
                   typesparam.push(item.typeparam);
                 });
               }
             } else {
-              headerAtt.push({ 
-                name: attr, 
-                alias: item.alias,
-                isPkColumn:item.type === 'pkcolumn'
+              headerAtt.push({
+                name: attr,
+                alias: attr.alias,
+                isPkColumn: attr.type === 'pkcolumn',
               });
               aligns.push('right');
               typesdata.push('string');
               typesparam.push('');
             }
           });
-          
-          //headerAtt.unshift({ name: this.configuration.pk, alias: 'pk' });
-          console.log(headerAtt);
+
           features.forEach((feature) => {
             const keys = Object.keys(feature.getAttributes());
             const properties = Object.values(feature.getAttributes());
             if (!M.utils.isNullOrEmpty(properties)) {
               if (columns !== undefined && columns.length > 0) {
                 const newProperties = [];
-                //console.log(columns);
                 properties.forEach((prop, index) => {
-
                   const filtered = columns.filter((elem) => {
                     return elem.name === keys[index] && elem.visible;
                   });
-
                   if (filtered.length > 0) {
-                    filtered.forEach((item)=>{
+                    filtered.forEach((item) => {
                       newProperties.push(prop);
                     });
                   }
-
                 });
                 attributes.push(newProperties);
               } else {
                 attributes.push(properties);
-                console.log("Hola");
               }
             }
-            
           });
-          console.log(attributes);
-          
           if (this.sortProperties_.active) {
             attributes = this.sortAttributes_(attributes, headerAtt);
           }
@@ -333,30 +315,26 @@ export default class QueryAttributesControl extends M.Control {
         const attributesParam = [];
         attributes.forEach((values) => {
           const attrP = [];
-          //console.log(values);
           values.forEach((v, index) => {
-            //console.log(index);
-            attrP.push({ 
-                value: v, 
-                align: aligns[index], 
-                // e2m: en vez de pasar el valor de typesdata[index], lo trnasformamos en flags que se gestionan más fácil con Handlebars
-                //isPkColumn: index===0,
-                isLinkURL: typesdata[index] === 'linkURL',
-                isButtonURL: typesdata[index] === 'buttonURL',
-                isImage: typesdata[index] === 'image',
-                isString: typesdata[index] === 'string',
-                isPercentage: typesdata[index] === 'percentage',
-                isFormatter: typesdata[index] === 'formatter',
-                isPkColumn: typesdata[index] === 'pkcolumn',
-                typeparam: typesparam[index] 
+            attrP.push({
+              value: v,
+              align: aligns[index],
+              /**
+               * e2m:
+               * typesdata[index] lo cambiamos por flags -> gestión más fácil en Handlebars
+               */
+              isLinkURL: typesdata[index] === 'linkURL',
+              isButtonURL: typesdata[index] === 'buttonURL',
+              isImage: typesdata[index] === 'image',
+              isString: typesdata[index] === 'string',
+              isPercentage: typesdata[index] === 'percentage',
+              isFormatter: typesdata[index] === 'formatter',
+              isPkColumn: typesdata[index] === 'pkcolumn',
+              typeparam: typesparam[index],
             });
           });
-
           attributesParam.push(attrP);
-          //console.log(attrP);
         });
-        //console.log(headerAtt);
-        console.log(attributesParam);
         if (!M.utils.isUndefined(headerAtt)) {
           params = {
             headerAtt,
@@ -367,54 +345,21 @@ export default class QueryAttributesControl extends M.Control {
 
         params.translations = { not_attributes: getValue('not_attributes') };
 
-
-
-        //e2m: no consigo que funcione bien este helper
-        Handlebars.registerHelper("patterntable", function (options){
-          console.log(options);
-          //console.log(options.data.root.attributes[150]);
-          let symbolPattern = "";
+        Handlebars.registerHelper('formatterStr', (item) => {
+          let symbolPattern = '';
           let numRepeat = 0;
-          let output = "";
-          options.data.root.attributes.forEach(element => {
-            try {
-              element.forEach(item => {
-                if(item.isFormatter){
-                    symbolPattern = item.typeparam;
-                    numRepeat= item.value;
-                    //console.log(`${symbolPattern} * ${numRepeat}`);
-                    output = "";
-                    for (let i = 0; i < numRepeat; i++) {
-                      output += symbolPattern;
-                    }
-                    //console.log(output);
-                    return output;            
-                }
-              });
-            } catch (error) {
-              console.log(error);
-            }
-          });
-          return output;
-        });
-
-
-        Handlebars.registerHelper('formatterStr', function(item){
-          let symbolPattern = "";
-          let numRepeat = 0;
-          let output = "";
-          numRepeat= item.value;
+          let output = '';
+          numRepeat = item.value;
           symbolPattern = item.typeparam;
-          for (let i = 0; i < numRepeat; i++) {
+          for (let i = 0; i < numRepeat; i += 1) {
             output += symbolPattern;
-          }          
+          }
           return output;
         });
 
-
-        const options = { 
-                jsonp: true, 
-                vars: params 
+        const options = {
+          jsonp: true,
+          vars: params,
         };
         const html = M.template.compileSync(tabledata, options);
         document.getElementById('m-queryattributes-table').appendChild(html);
@@ -424,27 +369,17 @@ export default class QueryAttributesControl extends M.Control {
         html.querySelectorAll('table thead tr th span').forEach((th) => {
           th.addEventListener('click', this.sort_.bind(this));
         });
-
         html.querySelectorAll('table tbody tr').forEach((tr) => {
           tr.addEventListener('click', this.centerOnFeature.bind(this));
         });
-
         if (callback) {
           callback();
         }
-
         this.map.getMapImpl().on('click', (evt) => {
           this.actualizaInfo(evt);
         });
-
-
       }
-      
     }, 1000);
-
-
-
-
   }
 
   /**
@@ -456,9 +391,7 @@ export default class QueryAttributesControl extends M.Control {
    * @param {array<string>} headerAtt - name attributes
    * @return {array<string>} attributes - Ordered attributes
    */
-  
   sortAttributes_(attributes, headerAtt) {
-
     const sortBy = this.sortProperties_.sortBy;
     let pos = 0;
     headerAtt.forEach((elem, index) => {
@@ -474,7 +407,6 @@ export default class QueryAttributesControl extends M.Control {
     if (this.sortProperties_.sortType === 'desc') {
       attributesSort = attributesSort.reverse();
     }
-
     return attributesSort;
   }
 
@@ -486,20 +418,18 @@ export default class QueryAttributesControl extends M.Control {
       newA = (`${newA}`).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       newB = (`${newB}`).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
-
     if (newA < newB) {
       res = -1;
     } else if (newA > newB) {
       res = 1;
     }
-
     return res;
   }
 
   /**
    * e2m:
    * Procedimiento para mostrar información al hacer clic en el elemento de la tabla
-   * @param {*} evt 
+   * @param {*} evt
    */
   centerOnFeature(evt) {
     document.querySelector('#m-queryattributes-options-information-container').innerHTML = '';
@@ -549,32 +479,27 @@ export default class QueryAttributesControl extends M.Control {
           },
         },
       });
-
       // e2m: Vaciamos el contenedor de información para cargar los datos nuevos
-      
       this.launchInfoWindow(html);
-
-
     }
   }
 
-/**
- * e2m:
- * Procedimiento para mostrar información al hacer clic en el dfeature sobre la cartografía
- * @param {*} evt 
- */
-  actualizaInfo(evt){
-
+  /**
+   * e2m:
+   * Procedimiento para mostrar información al hacer clic en el dfeature sobre la cartografía
+   * @param {*} evt
+   */
+  actualizaInfo(evt) {
+    /* eslint no-underscore-dangle: 0 */
     const this_ = this;
     const mapaOL = this.map.getMapImpl();
-
-    mapaOL.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-      var featureFacade = M.impl.Feature.olFeature2Facade(feature);
+    mapaOL.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
+      const featureFacade = M.impl.Feature.olFeature2Facade(feature);
       console.log(layer); // 📌 Necesito filtrar cuando la capa no es la adecuada
       console.log(layer.get('name'));
       console.log(layer.getProperties());
       const fields = [];
-      
+
       Object.entries(featureFacade.getAttributes()).forEach((entry) => {
         const config = this_.getColumnConfig(entry[0]);
         if (config.showpanelinfo === false) return;
@@ -601,51 +526,46 @@ export default class QueryAttributesControl extends M.Control {
           },
         },
       });
-
       this_.launchInfoWindow(html);
-
     });
 
     this.addCierraPanelEvent();
     const container = this.map_.getContainer().parentElement.parentElement;
     container.style.width = 'calc(100% - 530px)';
     container.style.position = 'fixed';
-     if (this_.position === 'TL') {
-       container.style.left = '530px';
-     } else {
-       container.style.right = '530px';
-     }
+    if (this_.position === 'TL') {
+      container.style.left = '530px';
+    } else {
+      container.style.right = '530px';
+    }
 
-     const elem = document.querySelector('.m-panel.m-queryattributes.collapsed');
-     if (elem !== null) {
-       elem.classList.remove("collapsed");
-       elem.classList.add("opened");
-     }
-
-     this.map_.refresh();
-
+    const elem = document.querySelector('.m-panel.m-queryattributes.collapsed');
+    if (elem !== null) {
+      elem.classList.remove('collapsed');
+      elem.classList.add('opened');
+    }
+    this.map_.refresh();
   }
 
 
   /**
    * e2m:
-   * Abre el sidepanel por código, cuando hacemos clic sobre uno de los features de la capa vectorial
-   * @param {*} html 
+   * Abre el sidepanel por código, al hacer clic sobre uno de los features de la capa vectorial
+   * @param {*} html
    */
-  launchInfoWindow(html){
-
+  launchInfoWindow(html) {
     document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '25vh';// e2m:tamaño máximo cuando se muestra información
-    document.querySelector('#m-queryattributes-options-information-container').innerHTML = ''; // e2m: borro contenido para evitar que concatene dentro ventanas de información
+    document.querySelector('#m-queryattributes-options-information-container').innerHTML = ''; // e2m:borro contenido para evitar que concatene dentro ventanas de información
     document.querySelector('#m-queryattributes-options-information-container').appendChild(html);
     document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').addEventListener('click', () => {
       const elem = document.querySelector('#m-queryattributes-information-content div');
       if (elem.style.display !== 'none') {
-        elem.style.display = 'none';  // e2m: colapsado
+        elem.style.display = 'none';// e2m:colapsado
         document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '64vh';
         document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.remove('icon-colapsar');
         document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.add('icon-desplegar');
       } else {
-        elem.style.display = 'block'; // e2m: desplegado
+        elem.style.display = 'block';// e2m:desplegado
         document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '15vh';
         document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.remove('icon-desplegar');
         document.querySelector('#m-queryattributes-information-content > p > span > span:first-child').classList.add('icon-colapsar');
@@ -656,14 +576,7 @@ export default class QueryAttributesControl extends M.Control {
       document.querySelector('#m-queryattributes-options-information-container').innerHTML = '';
       document.querySelector('.m-queryattributes #m-queryattributes-table-container').style.maxHeight = '75vh';
     });
-
   }
-
-
-  
-
-
-
 
   getColumnConfig(column) {
     let res = {};
@@ -705,11 +618,9 @@ export default class QueryAttributesControl extends M.Control {
    * @param {Map} map
    */
   createInitialView(map) {
-
-    const searchingFields = this.configuration.columns.filter(item => {
+    const searchingFields = this.configuration.columns.filter((item) => {
       return item.searchable === true;
     });
-
     const options = {
       jsonp: true,
       vars: {
@@ -727,12 +638,8 @@ export default class QueryAttributesControl extends M.Control {
         },
       },
     };
-
     this.initialView = M.template.compileSync(initialView, options);
-
   }
-
-  
 
   /**
    * Add html option in Selects.
@@ -803,10 +710,7 @@ export default class QueryAttributesControl extends M.Control {
 
   setDrawFilter() {
     this.getImpl().addDrawInteraction(() => {
-      console.log("Ejecuto callback");
-      
       const feature = this.getImpl().getPolygonFromDrawnFeature();
-      console.log(feature);
       const filter = M.filter.spatial.INTERSECT(feature);
       this.layer.setFilter(filter);
       this.filtered = true;
@@ -820,28 +724,24 @@ export default class QueryAttributesControl extends M.Control {
   }
 
 
-  //e2m: búsqueda por filtro de texto.
+  // e2m: búsqueda por filtro de texto.
   searchFilter() {
-   
     this.html.querySelector('#m-queryattributes-searching-results').style.display = 'block';
     let text = this.html.querySelector('#m-queryattributes-filter #m-queryattributes-search-input').value;
-    console.log(text);
     text = this.normalizeString_(text);
-    const searchbyColumn = document.getElementById("m-queryattributes-fieldselector").value;
-    console.log(searchbyColumn);
-    
+    const searchbyColumn = document.getElementById('m-queryattributes-fieldselector').value;
     // e2m: con esto busco en los valores de todos los campos
-    /*const filter = new M.filter.Function((feature) => {
-      let res = false;
-      Object.values(feature.getAttributes()).forEach((v) => {
-        console.log(v);
-        const value = this.normalizeString_(v);
-        if (value.indexOf(text) > -1) {
-          res = true;
-        }
-      });
-      return res;
-    });*/
+    // const filter = new M.filter.Function((feature) => {
+    //   let res = false;
+    //   Object.values(feature.getAttributes()).forEach((v) => {
+    //     console.log(v);
+    //     const value = this.normalizeString_(v);
+    //     if (value.indexOf(text) > -1) {
+    //       res = true;
+    //     }
+    //   });
+    //   return res;
+    // });
 
     /**
      * e2m:

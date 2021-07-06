@@ -167,15 +167,36 @@ Necesitamos un ejemplo para ver lo que se quiere. Lo más que podemos intuir es 
 
 Falta depurar la información y montar el prototipo. El resto de las funcionalidades ya están desarrolladas
 
-
 ## 🐛 Problemas
 
-* Al definir cual de los campos actúa como clave principal ys no es necesario quer el campo id aparezca en la tabla. Antes daba fallo. **Solucionado**.
+* Al definir cual de los campos actúa como clave principal ya no es necesario quer el campo id aparezca en la tabla. Antes daba fallo. **Solucionado**.
 * Cuando al aplicar filtros de texto no se obtienen elementos que lo satisfagan, daba un error al hacer zoom al resultado. **Solucionado**.
+
+
+string: tipo de cadena. Por defecto.
+image: contiene la URL de una imagen. La imagen se mostrarla en la tabla.
+linkURL: contiene una URL. Se muestra dentro de un hipervínculo.
+buttonURL: contiene una URL. Se muestra dentro de un botón.
+formatter: repite un carácter formateado un número especificado de veces.
+percentage: muestra el valor formateado en una barra de progreso.
 
 ## 📸 Capturas 👷
 
+### 🔸 Elementos de estilo
+
+||||
+|:----:|:----:|:----:|
+|string|Image|percentage|
+|<img src='assets/elem-string.jpg' style='width:150px;'>|<img src='assets/elem-img.jpg' style='width:150px;'>|<img src='assets/elem-percentaje.jpg' style='width:150px;'>|
+|linkURL|buttonURL|formatter|
+|<img src='assets/elem-linkurl.jpg' style='width:150px;'>|<img src='assets/elem-buttonurl.jpg' style='width:150px;'>|<img src='assets/elem-formatter.jpg' style='width:150px;'>|
+
+### 🔸 Tabla de elementos
+
 <img src='assets/captura01.jpg' style='width:400px;'>
+
+### 🔸 Ventana de información
+
 <img src='assets/captura02.jpg' style='width:400px;'>
 
 ## 👨‍💻 Desarrollo
@@ -238,3 +259,5 @@ $ncu
 * [Mapea Plugins](https://github.com/sigcorporativo-ja/mapea-plugins)
 * [APICNIG Plugins](https://componentes.ign.es/api-core/test.html)
 * [Wiki APICNIG](https://github.com/IGN-CNIG/API-CNIG/wiki)
+* [Apuntes complementarios](assets/_e2molin.md)
+* [Test](https://projects.develmap.com/attributestable/build/)
