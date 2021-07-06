@@ -120,30 +120,36 @@ map.addPlugin(mp);
 ```
 
 
-## ✅ Mejoras 👷
+## ✅ Terminado
 
 * Nueva documentación del plugin.
+* Mejora del aspecto visual de la información mostrada con la incorporación de elementos como imágenes, barras de progreso, formateadores de texto, aspecto viosual de los hipervínculos
 * Las búsquedas por texto se realizan al cambiar el contenido de la caja de texto o al pulsar sobre la lupita.
 * Definimos el atributo con la clave principal de *featureset*. De esa manera no es necesario que la primera columna contenga este valor.
 * Mostramos información del número de elementos en la tabla y el número de elementos del filtro aplicado. *Spinner* para marcar tiempos de búsqueda.
 * Nuevos tipos de valores para dar más opciones de renderizar los valores.
 * Al pinchar en un feature, debe abrirse el panel de QueryAttributtes si está colapsado. Falta cambiar el botón. Comprobar secuencia con el Chrome Inspector.
 * Podemos definir en qué campos se realizan búsquedas de texto, utilizando la propiedad *searchable*.
-* Parametrizable una [whitelist] de campos que se muestran en Información.
+* Parametrizable con una *whitelist* de campos que se muestran en Información.
+* Parametrizable con una *whitelist* de campos que se muestran en la tabla.
 * Mediante un desplegable con los nombres de los campos *searchables* elegimos si buscamos todos los campos o por uno en particular.
 
 
 ## ❌ Falta
 
 * Mejorar datos muestra.
-* Mejorar el aspecto visual de la información mostrada.
+* Mejora de la información mostrada:
+  * Clips de video
+  * Etiquetas con formato
+  * Mostrar contenido html en un modal form
 *	Localización y resaltado en mapa del elemento a partir de hacer clic en un registro en registros. El registro debe quedar resaltado también en registros.
 * Al hacer clic sobre un elemento en el mapa, resaltar este en mapa, y mostrar resaltado en registros. Si está activado información mostrar la información del elemento. Botón de deseleccionar el elemento en el mapa
-* Configuración de ventanas **landscape**.
-* Detectar la capa donde pincho el feature.
-* Cuando fuerzo la apertura del sidebar, no aparece el botón con el icono de cerrar
-* Iconos para indicar por cual de las columnas se ha ordenado
+* Configuración de ventanas **landscape**. Hay que ver lo que supone esto a prtir de lo que hay montado.
+* Detectar la capa donde pincho el *feature*.
+* Cuando fuerzo la apertura del *sidebar*, no aparece el botón con el icono de cerrar.
+* Iconos para indicar por cual de las columnas se ha ordenado.
 
+## 🔌 Desarrollos para incluir el plugin
 
 ### 🔸 Aplicación de nomenclátor
 
@@ -153,6 +159,13 @@ Es necesario preparar una API de consulta del NGBE para que **QueryAttributes** 
 
 En este caso es necesario contar con una capa vectorial dinámica pero de tipo temporal, esto es, que refresque sus elementos no por un cambio de vista, sino cada cierto intervalo de tiempo.
 
+### 🔸 Aplicación de web semántica
+
+Necesitamos un ejemplo para ver lo que se quiere. Lo más que podemos intuir es un funcionamiento parecido al de [Catálogo de la Cartoteca](https://www.ign.es/web/catalogo-cartoteca/search-in-map.html). Para esto, necesitamos lo mismo que para el caso de la Aplicación del Nomenclátor.
+
+### 🔸 Aplicación de geocines
+
+Falta depurar la información y montar el prototipo. El resto de las funcionalidades ya están desarrolladas
 
 
 ## 🐛 Problemas
