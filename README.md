@@ -175,9 +175,8 @@ Falta depurar la información y montar el prototipo. El resto de las funcionalid
 
 ## 📸 Capturas 👷
 
-![](assets/captura01.jpg)
-
-![](assets/captura02.jpg)
+<img src='assets/captura01.jpg' style='width:400px;'>
+<img src='assets/captura02.jpg' style='width:400px;'>
 
 ## 👨‍💻 Desarrollo
 
