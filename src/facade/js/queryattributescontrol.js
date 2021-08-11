@@ -76,6 +76,8 @@ export default class QueryAttributesControl extends M.Control {
 
     this.filtered = false;
 
+    this.bboxfilter = false;
+
     this.configuration = configuration;
 
     this.collapsed = collapsed_;
@@ -189,11 +191,11 @@ export default class QueryAttributesControl extends M.Control {
         document.querySelector('#m-queryattributes-options-buttons #limpiar-filtro-btn').style.display = 'none';
         document.querySelector('#m-queryattributes-filter #m-queryattributes-search-input').value = '';
         document.querySelector('#m-queryattributes-options-information-container').innerHTML = '';
+        this.bboxfilter=false;
       });
 
     html.querySelector('#m-queryattributes-filter #m-queryattributes-search-btn').addEventListener('click', this.searchFilter.bind(this));
     html.querySelector('#m-queryattributes-filter #m-queryattributes-search-input').addEventListener('keyup', (e) => {
-      console.log(e);
       this.searchFilter();
       // e2m: en vez de esperar al Enter para buscar, lo hace en cada pulsación
       // if (e.keyCode === 13) {
@@ -216,10 +218,12 @@ export default class QueryAttributesControl extends M.Control {
 
     if (this.filters) {
       this.showAttributeTable(this.configuration.layer);
+
     } else {
       this.showAttributeTable(this.configuration.layer, this.setBboxFilter.bind(this));
       this.map.getMapImpl().on('moveend', () => {
         this.setBboxFilter();
+
       });
     }
   }
@@ -378,6 +382,13 @@ export default class QueryAttributesControl extends M.Control {
         this.map.getMapImpl().on('click', (evt) => {
           this.actualizaInfo(evt);
         });
+
+        this.map.getMapImpl().on('moveend', (evt) => {
+          if (this.bboxfilter){
+            this.setBboxFilter();
+          }
+        });
+
       }
     }, 1000);
   }
@@ -698,6 +709,7 @@ export default class QueryAttributesControl extends M.Control {
     const filter = M.filter.spatial.INTERSECT(feature);
     this.layer.setFilter(filter);
     this.filtered = true;
+    this.bboxfilter = true;
     this.oldFilter = filter;
     this.oldLayer = this.layer;
     this.showAttributeTable(this.layer.name);
