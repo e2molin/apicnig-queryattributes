@@ -78,6 +78,9 @@ export default class QueryAttributesControl extends M.Control {
 
     this.bboxfilter = false;
 
+    // e2m: Guarda el id del elemento selecionado
+    this.featureIdSelected = -1;
+
     this.configuration = configuration;
 
     this.collapsed = collapsed_;
@@ -232,8 +235,17 @@ export default class QueryAttributesControl extends M.Control {
       .addEventListener('click', () => {
         document.querySelector('#m-queryattributes-options-buttons #cleanEmphasis-btn').style.display = 'none';
         this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
+        //e2m: limpiamos tabla
+        const rowfeature = document.getElementById('feat_' + this.featureIdSelected).parentNode;//e2m: elemento tr
+        // e2m: Limpiamos filas <tr> de la clase highlight-attrow
+        let nodes = rowfeature.parentNode.childNodes;
+        for (let i = 0; i < nodes.length; i++) {
+          if (nodes[i].nodeName.toLowerCase() == 'tr') {
+            nodes[i].classList.remove("highlight-attrow");
+          }
+        }
+        this.featureIdSelected = -1;
       });
-
 
     html.querySelector('#m-queryattributes-filter #m-queryattributes-search-btn').addEventListener('click', this.searchFilter.bind(this));
     html.querySelector('#m-queryattributes-filter #m-queryattributes-search-input').addEventListener('keyup', (e) => {
@@ -488,10 +500,21 @@ export default class QueryAttributesControl extends M.Control {
     const features = this.layer.getFeatures();
     const field = Object.keys(features[0].getAttributes())[0];
     console.log(evt.target.parentNode);
+    console.log(evt.target.parentNode.parentNode);
+
+    // e2m: Limpiamos filas de la clase highlight-attrow
+    var nodes = evt.target.parentNode.parentNode.childNodes;
+    for(var i=0; i<nodes.length; i++) {
+        if (nodes[i].nodeName.toLowerCase() == 'tr') {
+            nodes[i].classList.remove("highlight-attrow");
+        }
+    }
+    // e2m: Añadimos la clase highlight-attrow 
+    evt.target.parentNode.classList.add("highlight-attrow");
+
     const filtered = features.filter((f) => {
       return this.compareStrings(`${f.getAttributes()[field]}`.trim(), value) === 0;
     });
-
     if (filtered.length > 0) {
       const type = filtered[0].getGeometry().type.toLowerCase();
       const coordinates = filtered[0].getGeometry().coordinates;
@@ -547,15 +570,17 @@ export default class QueryAttributesControl extends M.Control {
   }
 
   /**
-   * e2m:
-   * Procedimiento para mostrar información al hacer clic en el dfeature sobre la cartografía
-   * @param {*} evt
-   */
+  * e2m:
+  * Procedimiento para mostrar información al hacer clic en el dfeature sobre la cartografía
+  * @param {*} evt
+  */
   actualizaInfo(evt) {
     /* eslint no-underscore-dangle: 0 */
     const this_ = this;
     const mapaOL = this.map.getMapImpl();
+
     mapaOL.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
+
       const featureFacade = M.impl.Feature.olFeature2Facade(feature);
       console.log(layer); // 📌 Necesito filtrar cuando la capa no es la adecuada
       console.log(layer.getProperties());
@@ -571,6 +596,8 @@ export default class QueryAttributesControl extends M.Control {
       const buttons = '#m-queryattributes-options-buttons>button';
       document.querySelector(`${buttons}#cleanEmphasis-btn`).style.display = 'block';
 
+
+      //let featureId=-1;
       Object.entries(featureFacade.getAttributes()).forEach((entry) => {
         const config = this_.getColumnConfig(entry[0]);
         if (config.showpanelinfo === false) return;
@@ -585,7 +612,31 @@ export default class QueryAttributesControl extends M.Control {
           isFormatter: config.type === 'formatter',
           typeparam: config.typeparam,
         });
+        // e2m: cogemos el identificador único del feature
+        if (config.type === "pkcolumn") { this.featureIdSelected = entry[1]; }
       });
+      if (this.featureIdSelected === -1) return;
+      console.log(this.featureIdSelected);
+
+      /**
+       * Procedimiento para marcar en tabla feature seleccionado
+       * Mostrar información atributos en ventana
+       * Scroll en lista hasta visualizarlo, sólo si el panel está abierto
+       */
+
+      // e2m: seleccionamos la fila <tr> que contiene la celda con el pk del elemento
+      const rowfeature = document.getElementById(`feat_${this.featureIdSelected}`).parentNode; //e2m: elemento tr
+
+      // e2m: Limpiamos filas <tr> de la clase highlight-attrow
+      const nodes = rowfeature.parentNode.childNodes;
+      for (let i = 0; i < nodes.length; i += 1) {
+        if (nodes[i].nodeName.toLowerCase() === 'tr') {
+          nodes[i].classList.remove('highlight-attrow');
+        }
+      }
+
+      // e2m: Añadimos la clase highlight-attrow
+      rowfeature.classList.add('highlight-attrow');
 
       const html = M.template.compileSync(information, {
         vars: {
@@ -598,7 +649,26 @@ export default class QueryAttributesControl extends M.Control {
         },
       });
       this_.launchInfoWindow(html);
+
+      const elemSidebar = document.querySelector('.m-panel.m-queryattributes.opened');
+      if (elemSidebar !== null) {
+        try {
+          // e2m: efecto scroll. Se hace tras redimensionar la tabla
+          rowfeature.scrollIntoView({
+            alignToTop: true,
+            behavior: 'smooth',
+            block: 'center',
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
     });
+
+    const elemSidebar = document.querySelector('.m-panel.m-queryattributes.opened');
+    if (elemSidebar !== null) {
+      return; // e2m: el sidebar está abierto
+    }
 
     this.addCierraPanelEvent();
     const container = this.map_.getContainer().parentElement.parentElement;
@@ -616,6 +686,16 @@ export default class QueryAttributesControl extends M.Control {
       elem.classList.add('opened');
     }
     this.map_.refresh();
+
+    // e2m: efecto scroll. Se hace tras redimensionar la tabla y abrir el panel.
+    if (this.featureIdSelected >= 0) {
+      const rowfeature = document.getElementById(`feat_${this.featureIdSelected}`).parentNode; // e2m: elemento tr
+      rowfeature.scrollIntoView({
+        alignToTop: true,
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
   }
 
 

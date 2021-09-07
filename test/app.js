@@ -1,4 +1,3 @@
-
 const COLORES_PROVINCIA = {
   2:'olive',
   5:'green',
@@ -38,7 +37,7 @@ const map = M.map({
  * e2m:
  * Configuración del plugin
  */
-const mp = new M.plugin.QueryAttributes({
+ const mp = new QueryAttributes({
   position: 'TL',
   collapsed: true,
   collapsible: true,
