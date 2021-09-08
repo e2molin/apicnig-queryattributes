@@ -1,5 +1,10 @@
 # 📓 Apuntes
 
+Para probarlo en producción
+
+http://localhost/apicnig/apicnig-queryattributes/test/prod.html
+
+
 ## ♟️ Snippets
 ### 🔸 JS Recorriendo un objeto, entradas, claves y valores
 
