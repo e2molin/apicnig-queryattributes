@@ -42,6 +42,7 @@ const map = M.map({
   collapsed: true,
   collapsible: true,
   filters: true,
+  refreshBBOXFilterOnPanning: true,
   configuration: {
     layer: 'vertices',
     pk: 'id',
